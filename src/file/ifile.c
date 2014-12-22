@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include <memory.h>
 
-#include "inode.h"
-#include "tools.h"
-#include "ifile.h"
+#include "../../lib/inode.h"
+#include "../../lib/tools.h"
+#include "../../lib/ifile.h"
 
 
 /* the file bloc number of a given character position in a file */  

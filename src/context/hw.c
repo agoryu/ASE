@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "hw.h"
+#include "../../lib/hw.h"
 
 /* a 8 milliseconds timer */
 #define TIMER_SEC  0

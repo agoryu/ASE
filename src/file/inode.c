@@ -1,4 +1,4 @@
-#include "inode.h"
+#include "../../lib/inode.h"
 
 void read_inode(const unsigned int inumber, struct inode_s *inode){
   read_bloc_n(current_vol, inumber, (unsigned char*)inode, sizeof(struct inode_s));

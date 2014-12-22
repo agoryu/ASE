@@ -1,4 +1,4 @@
-#include "context.h"
+#include "../../lib/context.h"
 
 /**
  * \brief Fonction permettant l'initiation d'un contexte 
