@@ -12,7 +12,6 @@ void cat(const char** arg) {
 	char* filename;
 	file_desc_t fd;
 	char* buf;
-	unsigned int i;
 
 	if(arg == NULL) {
 		return;
@@ -50,7 +49,7 @@ void cd(const char** arg) {
 		
 		inumber = inumber_of_path(arg[1]);
 		if(inumber > 0) {
-			current_path = arg[1];
+			strcpy(current_path, arg[1]);
 		}
 
 	} else {
@@ -61,7 +60,7 @@ void cd(const char** arg) {
 
 		inumber = inumber_of_path(filename);
 		if(inumber > 0) {
-			current_path = filename;
+			strcpy(current_path, filename);
 		}
 	}
 

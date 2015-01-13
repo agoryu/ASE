@@ -1,3 +1,5 @@
+ROOTDIR =../libhardware
+
 CC	= gcc
 CFLAGS	= -Wall -Werror -ansi -pedantic -m32
 CFLAGS  += -std=c11
