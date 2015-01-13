@@ -1,5 +1,5 @@
 CC	= gcc
-CFLAGS	= -Wall -Werror -ansi -pedantic
+CFLAGS	= -Wall -Werror -ansi -pedantic -m32
 CFLAGS  += -std=c11
 CFLAGS  += -g
 LIBDIR  = $(ROOTDIR)/lib

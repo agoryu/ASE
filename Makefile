@@ -1,5 +1,5 @@
 CC	= gcc
-CFLAGS	= -Wall -Werror -ansi -pedantic
+CFLAGS	= -Wall -Werror -ansi -pedantic -m32
 CFLAGS  += -std=c11
 CFLAGS  += -g
 LIBDIR  = $(ROOTDIR)/lib
@@ -8,7 +8,7 @@ LIBS    = -L$(LIBDIR) -lhardware
 
 TRASHFILE = *.gch *~ \#*\# nul
 
-all: 	context file mmu commande
+all: 	context file mmu shell
 
 # -------------------------------------------
 # This line is for Makefly check
@@ -25,8 +25,8 @@ file:
 mmu:
 	@(cd mmu && $(MAKE))
 
-commande:
-	@(cd commande && $(MAKE))
+shell:
+	@(cd shell && $(MAKE))
 
 .PHONY:	clean cleantrash cleandoc realclean doc
 
