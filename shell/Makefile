@@ -12,13 +12,16 @@ OBJECTS  =  commande.o
 
 TRASHFILE = *.gch *~ \#*\# nul
 
-all: 	$(OBJECTS)
+all: 	$(OBJECTS) shell
 
 # -------------------------------------------
 # This line is for Makefly check
 check-syntax:
 	gcc $(CFLAGS) -o nul -S $(INCDIR) ${CHK_SOURCES}
 # -------------------------------------------
+
+shell: shell.c commande.o commande.h
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 commande.o: commande.c commande.h
 	$(CC) $(CFLAGS) -c $^ $(INCDIR)
