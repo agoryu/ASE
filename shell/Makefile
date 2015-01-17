@@ -8,11 +8,11 @@ LIBDIR  = $(ROOTDIR)/lib
 INCDIR  = -I$(ROOTDIR)/include
 LIBS    = -L$(LIBDIR) -lhardware
 
-OBJECTS  =  commande.o
+#OBJECTS  =  commande.o
 
 TRASHFILE = *.gch *~ \#*\# nul
 
-all: 	$(OBJECTS) shell
+all: 	shell
 
 # -------------------------------------------
 # This line is for Makefly check
@@ -20,11 +20,11 @@ check-syntax:
 	gcc $(CFLAGS) -o nul -S $(INCDIR) ${CHK_SOURCES}
 # -------------------------------------------
 
-shell: shell.c commande.o commande.h
+shell: shell.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
-commande.o: commande.c commande.h
-	$(CC) $(CFLAGS) -c $^ $(INCDIR)
+#commande.o: commande.c commande.h
+#	$(CC) $(CFLAGS) -c $^ $(INCDIR)
 
 
 .PHONY:	clean cleantrash cleandoc realclean doc

@@ -1,4 +1,4 @@
-#include "../command/commande.h"
+#include "commande.h"
 
 char* current_path;
 
@@ -15,9 +15,9 @@ int main(int argc, char** argv) {
 	while(strcmp(entry, "exit") != 0) {
 
 		printf("prompt> ");
-		scanf("%s\n", entry);
+		fgets(entry, MAX_ENTRY_LENGTH, stdin);
 
-		while(entry[cpt] != EOF) {
+		while(entry[cpt] != '\n') {
 			if(entry[cpt] == ' ') {
 				num_option++;
 			} else {
