@@ -1,4 +1,4 @@
-#include "commande.h"
+#include "../shell/commande.h"
 
 int main(int argc, char** argv) {
 	

@@ -21,7 +21,7 @@ check-syntax:
 # -------------------------------------------
 
 shell: shell.c
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) $(INCDIR)
 
 #commande.o: commande.c commande.h
 #	$(CC) $(CFLAGS) -c $^ $(INCDIR)
