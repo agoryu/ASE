@@ -10,6 +10,13 @@
 #ifndef _DIR_H_
 #define _DIR_H_
 
+/**
+ * \file dir.h
+ * \brief Gestionnaire de dossier
+ * \author Philippe Marquet
+ * \version 1
+ */
+
 #define ENTRYMAXLENGTH 	16
 
 /* return the inumber of an absolute pathname. 

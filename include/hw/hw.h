@@ -10,6 +10,13 @@
 #ifndef _HW_H_
 #define _HW_H_
 
+/**
+ * \file hw.h
+ * \brief Créateur d'interuption
+ * \author Philippe Marquet
+ * \version 1
+ */
+
 typedef void (irq_handler_func_t)(void); 
 
 #define TIMER_IRQ	2

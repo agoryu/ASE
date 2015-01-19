@@ -11,6 +11,13 @@
 #ifndef _IFILE_H_
 #define _IFILE_H_
 
+/**
+ * \file ifile.h
+ * \brief Gestionnaire de fichier par leur inode
+ * \author Philippe Marquet
+ * \version 1
+ */
+
 #include "filesys/inode.h"
 #include "filesys/tools.h"
 
