@@ -158,8 +158,9 @@ int make_vol(const unsigned cylinder,
 	     const unsigned nbloc);
 
 /**
- * Affiche les volumes présents sur le disque.
+ * Affiche les volumes présents sur le disque, si il y en a.
+ * \return 1 si des partitions sont présentes sur le disque, 0 sinon.
  */
-void display_vol();
+unsigned display_vol();
 
 #endif

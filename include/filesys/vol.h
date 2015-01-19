@@ -57,6 +57,18 @@ struct free_bloc_s {
  */
 void init_super(const unsigned int vol);
 
+/* TODO
+ * Monte le volume \a vol comme volume courrant.
+ * \param[in] vol Le volume a monté.
+ * \return 1 si la fonction c'est bien passé, 0 sinon.
+ */
+/*unsigned mount(unsigned int vol);*/
+
+/* TODO
+ * Démonte le volume courrant et monte le volume système.
+ * \return 1 si la fonction c'est bien passé, 0 sinon.
+ */
+/*unsigned umount();*/
 
 /**
  * Charge le super bloc dans une variable globale

@@ -201,12 +201,12 @@ int make_vol(const unsigned cylinder,
 }
 
 
-void display_vol(){
-  int i, nvol;
+unsigned display_vol(){
+  unsigned i, nvol;
 
   if(mbr.mbr_n_vol == 0){
     printf("Aucun volume sur le disque.\n");
-    return;
+    return 0;
   }
   
   nvol = mbr.mbr_n_vol;
@@ -232,5 +232,6 @@ void display_vol(){
     }
     printf("\n");
   }
+  return 1;
 
 }

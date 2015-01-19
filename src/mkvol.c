@@ -4,21 +4,22 @@ static void empty_it(){
     return;
 }
 
-void usage(){
-  printf("Utilisation: mkvol -s NB_BLOC -fc CYLINDRE -fs SECTOR\n");
+void usage(char* name){
+  printf("Make Volume\n");
+  printf("\tPermets la creation d'un volume.\n");
   printf("\n");
-  printf("Permets la creation d'un volume");
-  printf("\n");
+  printf("Usage:\n");
   printf(" -s \t l'argument qui suit est le nombre de blocs pour le volume\n");
   printf(" -fc \t l'argument qui suit est le cylindre a partir duquel le volume commence\n");
   printf(" -fs \t l'argument qui suit est le secteur a partir duquel le volume commence\n");
+  printf("\t $ %s -s NB_BLOC -fc CYLINDRE -fs SECTOR\n", name);
   printf("\n");
-  printf("Exemples:\n");
-  printf("\t$mkvol -s nb_bloc -fc num_premier_cylindre -fs num_premier_secteur\n");
-  printf("\t$mkvol -fc 0 -fs 1 -s 12\n");
+  printf("Exemple:\n");
+  printf("\t$ %s -fc 0 -fs 1 -s 12\n", name);
+  exit(EXIT_SUCCESS);
 }
 
-int main(int argc, char**argv){
+int main(int argc, char* argv[]){
 	
   unsigned fc = HDA_MAXCYLINDER+1;
   unsigned fs = HDA_MAXSECTOR+1;
@@ -28,8 +29,7 @@ int main(int argc, char**argv){
 
   /*vérification des arguments entree par l'utilisateur */
   if(argc != 7 || (argc>1  && strcmp(argv[1], "-h")==0)){
-    usage();
-    exit(EXIT_SUCCESS);
+    usage(argv[0]);
   }
 
   /* init hardware */

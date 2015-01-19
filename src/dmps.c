@@ -6,12 +6,14 @@ static void empty_it(){
 
 void usage(char* name){
   printf("Dump Sector\n");
+  printf("\tShow the value of a sector.\n");
   printf("\n");
   printf("Usage:\n");
-  printf("\t$%s cylinder sector\n", name);
+  printf("\t$ %s cylinder sector\n", name);
+  printf("\n");
   printf("Exemple:\n");
-  printf("\t$%s 0 2\n", name);
-  printf("\t$Data from cylinder 0 and sector 2\n");
+  printf("\t$ %s 0 2\n", name);
+  printf("\t$ Data from cylinder 0 and sector 2\n");
   exit(EXIT_SUCCESS);
 }
 

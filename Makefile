@@ -43,7 +43,7 @@ vpath %.ini $(ETCDIR)
 
 SUBDIRS  = mmu filesys drive context hw
 
-BINARIES = prodcons dmps strs frmt dvol mkvol
+BINARIES = prodcons dmps strs frmt mkvol mknfs dfs
 BINPATHS = ${addprefix $(BINDIR)/, $(BINARIES)}
 
 OBJECTS  = ${addsuffix .o, $(BINARIES)}
@@ -73,13 +73,18 @@ bin/mmutest:\
 	obj/mmu/mi_user.o obj/mmu/mi_kernel.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
-bin/mkvol:\
-	obj/mkvol.o obj/filesys/vol.o \
+bin/dfs:\
+	obj/dfs.o obj/filesys/vol.o \
 	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
-bin/dvol:\
-	obj/dvol.o obj/filesys/vol.o \
+bin/mknfs:\
+	obj/mknfs.o obj/filesys/vol.o \
+	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
+
+bin/mkvol:\
+	obj/mkvol.o obj/filesys/vol.o \
 	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
@@ -106,8 +111,9 @@ bin:
 ###------------------------------
 ### Compile source
 ###------------------------------------------------------------
+obj/dfs.o:		dfs.c filesys/vol.h
+obj/mknfs.o:		mknfs.c filesys/vol.h
 obj/mkvol.o:		mkvol.c filesys/vol.h
-obj/dvol.o:		dvol.c filesys/vol.h
 obj/frmt.o:		frmt.c drive/drive.h
 obj/strs.o:		strs.c drive/drive.h
 obj/dmps.o:		dmps.c drive/drive.h
@@ -128,7 +134,7 @@ obj/hw/hw.o: 		hw/hw.c hw/hw.h
 
 
 
-$(OBJDIR) obj/%.o: %.c | $(OBJDIRS)
+obj/%.o: %.c | $(OBJDIRS)
 	$(CC) $(CFLAGS) -I$(INCDIR) -o $@ -c $<
 
 

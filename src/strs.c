@@ -6,11 +6,13 @@ static void empty_it(){
 
 void usage(char* name){
   printf("Store Sector\n");
+  printf("\tStore a buffer value in a sector.\n");
   printf("\n");
   printf("Usage:\n");
-  printf("\t$%s cylinder sector buffer\n", name);
+  printf("\t$ %s cylinder sector buffer\n", name);
+  printf("\n");
   printf("Exemple:\n");
-  printf("\t$%s 0 2 \"Hello World\"\n", name);
+  printf("\t$ %s 0 2 \"Hello World\"\n", name);
   exit(EXIT_SUCCESS);
 }
 
@@ -41,7 +43,6 @@ int main(int argc, char* argv[]){
   }
 
   /* Allows all IT */
-  printf("un mask\n");
   _mask(1);
   
   if(!memcpy((void*)buffer, (void*)argv[3], buf_size)){
@@ -51,9 +52,6 @@ int main(int argc, char* argv[]){
   
   write_sector(cylinder, sector, buffer);
   
-  
   free(buffer);
-  printf("c'est finit les conneries\n");
-
   exit(EXIT_SUCCESS);
 }

@@ -4,12 +4,25 @@ static void empty_it(){
   return;
 }
 
-int main(int argc, char**argv){
+void usage(char* name){
+  printf("Make New FileSystem\n");
+  printf("\tInitialaze the current volume\n");
+  printf("\n");
+  printf("Usage:\n");
+  printf("\t$ %s\n", name);
+  exit(EXIT_SUCCESS);
+}
+
+int main(int argc, char* argv[]){
 
   unsigned int i;
   unsigned fc = 0;
   unsigned fs = 1;
   unsigned nb_bloc = 10;
+
+  if(argc != 1){
+    usage(argv[0]);
+  }
 
   /* init hardware */
   if(!init_hardware(HW_CONFIG)) {

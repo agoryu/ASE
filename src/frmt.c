@@ -1,18 +1,24 @@
 #include "drive/drive.h"
 
 static void empty_it(){
-    return;
+  return;
 }
 
+void usage(char* name){
+  printf("Format Disk\n");
+  printf("\tFormat all sector of the disk.\n");
+  printf("\n");
+  printf("Usage:\n");
+  printf("\t$ %s\n", name);
+  exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char* argv[]){
 
   int i;
 
-  if(argc>1 || (argc>1  && strcmp(argv[1], "-h")==0) ){
-    printf("Usage:\n");
-    printf("\t$dmps cylindre secteur\n");
-    exit(EXIT_SUCCESS);
+  if(argc!=1){
+    usage(argv[0]);
   }
 
   /* init hardware */

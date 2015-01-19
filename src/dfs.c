@@ -4,13 +4,26 @@ static void empty_it(){
     return;
 }
 
-int main(int argc, char**argv){
+void usage(char* name){
+  printf("Display FileSystem\n");
+  printf("\tDisplay the partitions and the amount of available disk space for the current one.\n");
+  printf("\n");
+  printf("Usage:\n");
+  printf("\t$ %s\n", name);
+  exit(EXIT_SUCCESS);
+}
 
-  int i;
+int main(int argc, char* argv[]){
+
+  unsigned i;
+
+  if(argc!=1){
+    usage(argv[0]);
+  }
 
   /* init hardware */
   if(!init_hardware(HW_CONFIG)){
-    perror("Initialization error\n");
+    fprintf(stderr, "Initialization error\n");
     exit(EXIT_FAILURE);
   }
 
@@ -23,13 +36,15 @@ int main(int argc, char**argv){
 	
   /* chargement du mbr */
   if(!load_mbr()){
-    perror("Erreur lors du chargement du Master Boot Record.\n");
+    fprintf(stderr, "Erreur lors du chargement du Master Boot Record.\n");
     exit(EXIT_FAILURE);
   }
 
   /* afficher les volumes */
   load_super(current_vol);  
-  display_vol();
+  if(!display_vol()){
+    exit(EXIT_SUCCESS);
+  }
 
 
   printf("Il reste %d espace dans le volume courant.\n", get_nb_free_bloc());
