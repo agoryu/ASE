@@ -1,7 +1,7 @@
 #ifndef SEM_H
 #define SEM_H
 /**
- * \file context.h
+ * \file sem.h
  * \brief Gestionnaire de semaphore
  * \author Elliot Vanegue et Gaëtan Deflandre
  * \version 1

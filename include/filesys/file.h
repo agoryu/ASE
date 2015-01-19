@@ -10,6 +10,13 @@
 #ifndef _FILE_H_
 #define _FILE_H_
 
+/**
+ * \file file.h
+ * \brief Gestionnaire de fichier
+ * \author Philippe Marquet
+ * \version 1
+ */
+
 #include "filesys/ifile.h"
 #include "filesys/dir.h"
 
