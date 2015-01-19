@@ -105,11 +105,9 @@ void write_sector_n(const unsigned int cylinder,
     return;
   }
 
-  printf("n: %d\n", n);
 
   /* ecrire les donnees dans MASTERBUFFER */
   for(i=0; i<HDA_SECTORSIZE-1 && i<n; i++){
-    printf("i: %d\n", i);
     MASTERBUFFER[i] = buffer[i];
   }
   
@@ -119,8 +117,6 @@ void write_sector_n(const unsigned int cylinder,
   _out(HDA_DATAREGS, 1);
   _out(HDA_CMDREG, CMD_WRITE);
   _sleep(HDA_IRQ);
-  printf("trollux\n");
-
 }
 
 

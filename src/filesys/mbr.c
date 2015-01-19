@@ -75,10 +75,6 @@ int load_mbr() {
   /* lecture du mbr */
   read_sector_n(0, 0, (unsigned char*)&mbr, sizeof(struct mbr_s));
 
-    printf("provient direct du disk:\n");
-    printf("n vol: %d\n", mbr.mbr_magic);
-    printf("magic: %d\n", mbr.mbr_magic);
-
   /* premiere fois que le disque est utilisé */
   if(mbr.mbr_magic != MBR_MAGIC) {
 
@@ -98,12 +94,6 @@ int load_mbr() {
 
 
 int save_mbr() {
-
-    printf("écrire sur disk:\n");
-    printf("n vol: %d\n", mbr.mbr_n_vol);
-    printf("magic: %d\n", mbr.mbr_magic);
-    printf("real magic: %d\n", MBR_MAGIC);
-
   write_sector_n(0, 0, (unsigned char*)&mbr, sizeof(struct mbr_s));
   return 1;
 }
