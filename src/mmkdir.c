@@ -1,5 +1,5 @@
 #include "filesys/dir.h"
-#include "shell/command.h"
+#include "shell/commande.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -85,7 +85,9 @@ bin/mcd:\
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mcat:\
-	obj/mcat.o obj/filesys/vol.o \
+	obj/mcat.o obj/filesys/vol.o obj/filesys/inode.o \
+	obj/filesys/ifile.o obj/filesys/file.o \
+	obj/filesys/dir.o obj/filesys/tools.o \
 	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
