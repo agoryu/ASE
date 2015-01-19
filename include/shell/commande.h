@@ -1,10 +1,13 @@
-#include "filesys/dir.h"
-#include "filesys/file.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
+#define MAX_ENTRY 255
+#define MAX_COMMAND 10
+#define MAX_OPTION 255
+#define MAX_PATH 255
+#define COMMAND_PATH "../command/"
 
-void ls(const char** arg);
-
-void cat(const char** arg);
-
-void cd(const char** arg);
+extern char* current_path;
 

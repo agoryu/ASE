@@ -43,7 +43,7 @@ vpath %.ini $(ETCDIR)
 
 SUBDIRS  = mmu filesys drive context hw
 
-BINARIES = prodcons dmps strs frmt dvol mkvol
+BINARIES = prodcons dmps strs frmt dvol mkvol mcd mcat mmkdir shell
 BINPATHS = ${addprefix $(BINDIR)/, $(BINARIES)}
 
 OBJECTS  = ${addsuffix .o, $(BINARIES)}
@@ -71,6 +71,26 @@ all: $(BINPATHS) $(OBJPATHS) $(RESSOURCES) $(LIBRARIES) bin/mmutest
 ###------------------------------------------------------------
 bin/mmutest:\
 	obj/mmu/mi_user.o obj/mmu/mi_kernel.o | $(BINDIR)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
+
+bin/shell:\
+	obj/shell.o obj/filesys/vol.o \
+	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
+
+bin/mcd:\
+	obj/mcd.o obj/filesys/vol.o \
+	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
+
+bin/mcat:\
+	obj/mcat.o obj/filesys/vol.o \
+	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
+
+bin/mmkdir:\
+	obj/mmkdir.o obj/filesys/vol.o \
+	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mkvol:\
@@ -106,6 +126,11 @@ bin:
 ###------------------------------
 ### Compile source
 ###------------------------------------------------------------
+obj/mcd.o:			mcd.c shell/commande.h filesys/dir.h
+obj/mcat.o:			mcat.c shell/commande.h
+obj/mmkdir.o:		mmkdir.c shell/commande.h filesys/dir.h
+obj/shell.o:		shell.c filesys/vol.h shell/commande.h
+
 obj/mkvol.o:		mkvol.c filesys/vol.h
 obj/dvol.o:		dvol.c filesys/vol.h
 obj/frmt.o:		frmt.c drive/drive.h
@@ -116,7 +141,7 @@ obj/prodcons.o: 	prodcons.c context/sem.h
 obj/mmu/mi_user.o:	mmu/mi_user.c mmu/mi_syscall.h
 obj/mmu/mi_kernel.o:	mmu/mi_kernel.c mmu/mi_syscall.h
 
-obj/filesys/vol.o:	filesys/vol.c filesys/vol.h filesys/mbr.h
+obj/filesys/vol.o:	filesys/vol.c filesys/vol.h
 obj/filesys/mbr.o:	filesys/mbr.c filesys/mbr.h drive/drive.h
 
 obj/drive/drive.o:	drive/drive.c drive/drive.h hw/hardware.h
@@ -128,7 +153,7 @@ obj/hw/hw.o: 		hw/hw.c hw/hw.h
 
 
 
-$(OBJDIR) obj/%.o: %.c | $(OBJDIRS)
+obj/%.o: %.c | $(OBJDIRS)
 	$(CC) $(CFLAGS) -I$(INCDIR) -o $@ -c $<
 
 
