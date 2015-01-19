@@ -35,9 +35,9 @@ unsigned int create_inode(const enum inode_type_e type){
 int delete_inode(const unsigned int inumber){
   
   struct inode_s inode;
-  unsigned int blocs[NNBPB];
-  unsigned int blocs2[NNBPB];
-  int i;
+  unsigned blocs[NNBPB];
+  unsigned blocs2[NNBPB];
+  unsigned i;
 
   read_inode(inumber, &inode);
   free_blocs(inode.in_direct, N_DIRECT);

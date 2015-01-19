@@ -16,9 +16,8 @@
 /*------------------------------
   explain why exiting
   ------------------------------------------------------------*/
-int
-fatal(int assert, const char *fname, const char *fmt, ...)
-{
+int fatal(int assert, const char *fname, const char *fmt, ...){
+
     if (! assert) {
 	va_list ap;
 	va_start(ap, fmt);
@@ -41,9 +40,8 @@ fatal(int assert, const char *fname, const char *fmt, ...)
 
 #include <string.h>
 
-char *
-strdup(const char *s)
-{
+char* strdup(const char *s){
+
     size_t siz;
     char *copy;
     
@@ -53,4 +51,5 @@ strdup(const char *s)
     (void)memcpy(copy, s, siz);
     return(copy);
 }
+
 #endif /* STRDUP_MISSING */

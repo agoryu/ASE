@@ -48,7 +48,7 @@ BINPATHS = ${addprefix $(BINDIR)/, $(BINARIES)}
 
 OBJECTS  = ${addsuffix .o, $(BINARIES)}
 OBJECTS += ${addprefix mmu/, ${addsuffix .o, mi_kernel mi_user}}
-OBJECTS += ${addprefix filesys/, ${addsuffix .o, mbr vol}}
+OBJECTS += ${addprefix filesys/, ${addsuffix .o, mbr vol inode ifile dir file}}
 OBJECTS += ${addprefix drive/, ${addsuffix .o, drive}}
 OBJECTS += ${addprefix context/, ${addsuffix .o, context sem}}
 OBJECTS += ${addprefix hw/, ${addsuffix .o, hw}}
@@ -79,7 +79,8 @@ bin/shell:\
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mcd:\
-	obj/mcd.o obj/filesys/dir.o obj/filesys/vol.o \
+	obj/mcd.o obj/filesys/dir.o obj/filesys/tools.o \
+	obj/filesys/ifile.o obj/filesys/inode.o obj/filesys/vol.o \
 	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
@@ -134,7 +135,10 @@ bin:
 obj/mcd.o:		mcd.c shell/commande.h filesys/dir.h
 obj/mcat.o:		mcat.c shell/commande.h
 obj/mmkdir.o:		mmkdir.c shell/commande.h filesys/dir.h
-obj/shell.o:		shell.c filesys/vol.h shell/commande.h
+obj/shell.o:		shell.c shell/commande.h filesys/vol.h
+obj/writefile.o:	writefile.c filesys/inode.h filesys/ifile.h filesys/tools.h
+obj/readfile.o:		readfile.c filesys/inode.h filesys/ifile.h filesys/tools.h
+obj/mkfile.o:		mkfile.c filesys/inode.h filesys/ifile.h filesys/tools.h
 obj/dfs.o:		dfs.c filesys/vol.h
 obj/mknfs.o:		mknfs.c filesys/vol.h
 obj/mkvol.o:		mkvol.c filesys/vol.h
@@ -146,13 +150,17 @@ obj/prodcons.o: 	prodcons.c context/sem.h
 obj/mmu/mi_user.o:	mmu/mi_user.c mmu/mi_syscall.h
 obj/mmu/mi_kernel.o:	mmu/mi_kernel.c mmu/mi_syscall.h
 
+obj/filesys/file.o:	filesys/file.c filesys/file.h
+obj/filesys/dir.o:	filesys/dir.c filesys/dir.h filesys/ifile.h filesys/tools.h
+obj/filesys/ifile.o:	filesys/ifile.c filesys/ifile.h
+obj/filesys/inode.o:	filesys/inode.c filesys/inode.h
 obj/filesys/vol.o:	filesys/vol.c filesys/vol.h
-obj/filesys/mbr.o:	filesys/mbr.c filesys/mbr.h drive/drive.h
+obj/filesys/mbr.o:	filesys/mbr.c filesys/mbr.h
 
-obj/drive/drive.o:	drive/drive.c drive/drive.h hw/hardware.h
+obj/drive/drive.o:	drive/drive.c drive/drive.h
 
 obj/context/sem.o: 	context/sem.c context/sem.h
-obj/context/context.o: 	context/context.c context/context.h hw/hw.h
+obj/context/context.o: 	context/context.c context/context.h
 
 obj/hw/hw.o: 		hw/hw.c hw/hw.h
 

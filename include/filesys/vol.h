@@ -9,8 +9,7 @@
  */
 
 #include "filesys/mbr.h"
-#include "filesys/ifile.h"
-#include "filesys/dir.h"
+
 
 /** Position du super dans la liste de bloc */
 #define SUPER_BLOC 0
