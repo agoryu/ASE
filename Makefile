@@ -41,9 +41,9 @@ vpath %.c $(SRCDIR)
 vpath %.h $(INCDIR)
 vpath %.ini $(ETCDIR)
 
-SUBDIRS  = mmu filesys drive context hw
+SUBDIRS  = mmu filesys drive context hw shell
 
-BINARIES = prodcons dmps strs frmt mkvol mknfs dfs mcd mcat mmkdir shell
+BINARIES = prodcons dmps strs frmt mkvol mknfs dfs shell
 BINPATHS = ${addprefix $(BINDIR)/, $(BINARIES)}
 
 OBJECTS  = ${addsuffix .o, $(BINARIES)}
@@ -52,6 +52,7 @@ OBJECTS += ${addprefix filesys/, ${addsuffix .o, mbr vol inode ifile dir file}}
 OBJECTS += ${addprefix drive/, ${addsuffix .o, drive}}
 OBJECTS += ${addprefix context/, ${addsuffix .o, context sem}}
 OBJECTS += ${addprefix hw/, ${addsuffix .o, hw}}
+OBJECTS += ${addprefix shell/, ${addsuffix .o, commande}}
 OBJPATHS = ${addprefix $(OBJDIR)/, $(OBJECTS)}
 OBJDIRS  = ${addprefix $(OBJDIR)/, $(SUBDIRS)}
 
@@ -74,26 +75,10 @@ bin/mmutest:\
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/shell:\
-	obj/shell.o obj/filesys/vol.o \
-	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
-
-bin/mcd:\
-	obj/mcd.o obj/filesys/dir.o obj/filesys/tools.o \
-	obj/filesys/ifile.o obj/filesys/inode.o obj/filesys/vol.o \
-	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
-
-bin/mcat:\
-	obj/mcat.o obj/filesys/vol.o obj/filesys/inode.o \
-	obj/filesys/ifile.o obj/filesys/file.o \
-	obj/filesys/dir.o obj/filesys/tools.o \
-	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
-
-bin/mmkdir:\
-	obj/mmkdir.o obj/filesys/vol.o \
-	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+	obj/shell.o obj/filesys/vol.o obj/shell/commande.o\
+	obj/filesys/mbr.o obj/filesys/ifile.o obj/drive/drive.o \
+	obj/filesys/file.o obj/filesys/inode.o \
+	obj/filesys/dir.o obj/filesys/tools.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/dfs:\
@@ -134,9 +119,6 @@ bin:
 ###------------------------------
 ### Compile source
 ###------------------------------------------------------------
-obj/mcd.o:		mcd.c shell/commande.h filesys/dir.h
-obj/mcat.o:		mcat.c shell/commande.h
-obj/mmkdir.o:		mmkdir.c shell/commande.h filesys/dir.h
 obj/shell.o:		shell.c shell/commande.h filesys/vol.h
 obj/writefile.o:	writefile.c filesys/inode.h filesys/ifile.h filesys/tools.h
 obj/readfile.o:		readfile.c filesys/inode.h filesys/ifile.h filesys/tools.h
@@ -152,6 +134,7 @@ obj/prodcons.o: 	prodcons.c context/sem.h
 obj/mmu/mi_user.o:	mmu/mi_user.c mmu/mi_syscall.h
 obj/mmu/mi_kernel.o:	mmu/mi_kernel.c mmu/mi_syscall.h
 
+obj/shell/commande.o: shell/commande.c shell/commande.h
 obj/filesys/file.o:	filesys/file.c filesys/file.h
 obj/filesys/dir.o:	filesys/dir.c filesys/dir.h filesys/ifile.h filesys/tools.h
 obj/filesys/ifile.o:	filesys/ifile.c filesys/ifile.h
@@ -189,6 +172,10 @@ obj/context:
 	mkdir -p $@
 
 obj/hw:
+	mkdir -p $(OBJDIR)
+	mkdir -p $@
+
+obj/shell:
 	mkdir -p $(OBJDIR)
 	mkdir -p $@
 

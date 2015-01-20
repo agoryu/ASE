@@ -43,8 +43,6 @@ void init_super(const unsigned int vol) {
 
   struct super_s super;
   unsigned int free_size;
-  /*unsigned int inumber = create_ifile(IT_DIR);
-  unsigned int num_bloc;*/
 
   if(!is_correct_volume(vol)){
     fprintf(stderr, "Impossible d'initialiser un super bloc pour le volume %d.\n", vol+1);
@@ -64,9 +62,6 @@ void init_super(const unsigned int vol) {
   super.super_n_free = free_size;
   write_bloc_n(vol, SUPER_BLOC, (unsigned char*)&super, sizeof(struct super_s));
 
-  /* creation de la racine du disque */
-  /*num_bloc = new_bloc();
-  write_bloc_n(vol, num_bloc, (unsigned char*)&inumber, sizeof(unsigned int));*/
 }
 
 

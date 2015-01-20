@@ -2,7 +2,7 @@
    $Id: ifile.c,v 1.3 2009/11/24 16:44:39 marquet Exp $
    ------------------------------------------------------------
 
-   File manipulation. 
+   File manipulation.
    Basic version; access file via inode number.
    Philippe Marquet, october 2009
    
@@ -20,28 +20,32 @@
 /* the index in a bloc of given character position in a file */  
 #define ibloc_of_pos(pos) ((pos) % BLOC_SIZE)
 
+static void empty_it(){
+    return;
+}
+
 /*------------------------------
   Create and delete file
   ------------------------------------------------------------*/
 
 unsigned int create_ifile(file_type_t type){
 
-  unsigned int inumber; 
+    unsigned int inumber;
 
-  inumber = create_inode(type);
-  ffatal(inumber, "unable to create inode"); 
+    inumber = create_inode(type);
+    ffatal(inumber, "unable to create inode");
 
-  return inumber; 
+    return inumber;
 }
 
 int delete_ifile(unsigned int inumber){
 
-  int status;
+    int status;
 
-  status = delete_inode(inumber);
-  ffatal(status == RETURN_SUCCESS, "unable to delete inode");
+    status = delete_inode(inumber);
+    ffatal(status == RETURN_SUCCESS, "unable to delete inode");
 
-  return RETURN_SUCCESS;
+    return RETURN_SUCCESS;
 }
 
 /*------------------------------
@@ -49,42 +53,42 @@ int delete_ifile(unsigned int inumber){
   ------------------------------------------------------------*/
 
 int open_ifile(file_desc_t *fd, unsigned int inumber){
-  struct inode_s inode; 
-  return iopen_ifile(fd, inumber, &inode);
+    struct inode_s inode;
+    return iopen_ifile(fd, inumber, &inode);
 }
 
 void close_ifile(file_desc_t *fd){
 
-  struct inode_s inode;
+    struct inode_s inode;
     
-  /* if the buffer is dirty, flush the file */
-  flush_ifile(fd);
+    /* if the buffer is dirty, flush the file */
+    flush_ifile(fd);
     
-  /* update the inode information (size) */
-  read_inode(fd->fds_inumber, &inode);
-  inode.in_size = fd->fds_size;
-  write_inode(fd->fds_inumber, &inode);
+    /* update the inode information (size) */
+    read_inode(fd->fds_inumber, &inode);
+    inode.in_size = fd->fds_size;
+    write_inode(fd->fds_inumber, &inode);
 }
 
 /* note that flush don't need to worry about the bloc allocation; a
-   previous write operation has already done it. */ 
+   previous write operation has already done it. */
 void flush_ifile(file_desc_t *fd){
 
-  unsigned int fbloc; /* bloc index in the file */
-  unsigned int vbloc; /* bloc index in the volume */
+    unsigned int fbloc; /* bloc index in the file */
+    unsigned int vbloc; /* bloc index in the volume */
 
-  if (fd-> fds_dirty) {
-    /* compute the number of the bloc on the volume associated to
-       the buffer */ 
-    fbloc = bloc_of_pos(fd->fds_pos);
-    vbloc = vbloc_of_fbloc(fd-> fds_inumber, fbloc, TRUE);
+    if (fd-> fds_dirty) {
+        /* compute the number of the bloc on the volume associated to
+       the buffer */
+        fbloc = bloc_of_pos(fd->fds_pos);
+        vbloc = vbloc_of_fbloc(fd-> fds_inumber, fbloc, TRUE);
 
-    /* write back the buffer */
-    write_bloc(current_vol, vbloc, fd->fds_buf);
+        /* write back the buffer */
+        write_bloc(current_vol, vbloc, fd->fds_buf);
 
-    /* done */
-    fd-> fds_dirty = FALSE ; 
-  }
+        /* done */
+        fd-> fds_dirty = FALSE ;
+    }
 }
 
 /*------------------------------
@@ -93,98 +97,98 @@ void flush_ifile(file_desc_t *fd){
 
 /* move the cursor of offset positions. */
 void seek_ifile(file_desc_t *fd, int offset){
-  
-  unsigned int old_pos = fd->fds_pos;
-  unsigned int fbloc, vbloc; 
-    
-  /* update the position */
-  fd->fds_pos += offset;
 
-  /* does the seek imply a jump in another bloc? */
-  if (bloc_of_pos(fd->fds_pos) != bloc_of_pos(old_pos)) {
-    /* flush */
-    flush_ifile(fd);
+    unsigned int old_pos = fd->fds_pos;
+    unsigned int fbloc, vbloc;
     
-    /* the bloc index of the new buffer */
-    fbloc = bloc_of_pos(fd->fds_pos);
-    vbloc = vbloc_of_fbloc(fd->fds_inumber, fbloc, FALSE);
+    /* update the position */
+    fd->fds_pos += offset;
 
-    if (! vbloc)
-      /* the bloc #0 is full of zeros */
-      memset(fd->fds_buf, 0, BLOC_SIZE);
-    else
-      /* load the bloc */
-      read_bloc(current_vol, vbloc, fd->fds_buf);
-  }
+    /* does the seek imply a jump in another bloc? */
+    if (bloc_of_pos(fd->fds_pos) != bloc_of_pos(old_pos)) {
+        /* flush */
+        flush_ifile(fd);
+
+        /* the bloc index of the new buffer */
+        fbloc = bloc_of_pos(fd->fds_pos);
+        vbloc = vbloc_of_fbloc(fd->fds_inumber, fbloc, FALSE);
+
+        if (! vbloc)
+            /* the bloc #0 is full of zeros */
+            memset(fd->fds_buf, 0, BLOC_SIZE);
+        else
+            /* load the bloc */
+            read_bloc(current_vol, vbloc, fd->fds_buf);
+    }
 }
 
 /* move the cursor at offset */
 void seek2_ifile(file_desc_t *fd, int offset){
-  seek_ifile(fd, offset - fd->fds_pos);
+    seek_ifile(fd, offset - fd->fds_pos);
 }
 
 /*------------------------------
-  Read a char in a file 
+  Read a char in a file
   ------------------------------------------------------------*/
 int readc_ifile(file_desc_t *fd){
 
-  char c;
+    char c;
     
-  /* eof? */
-  if (fd->fds_pos > fd->fds_size)
-    return READ_EOF; 
+    /* eof? */
+    if (fd->fds_pos > fd->fds_size)
+        return READ_EOF;
 
-  /* the data is in the buffer, just return it */
-  c = fd->fds_buf[ibloc_of_pos(fd->fds_pos)];
+    /* the data is in the buffer, just return it */
+    c = fd->fds_buf[ibloc_of_pos(fd->fds_pos)];
     
-  /* seek + 1 */
-  seek_ifile(fd, 1);
+    /* seek + 1 */
+    seek_ifile(fd, 1);
     
-  return c; 
+    return c;
 }
 
 /*------------------------------
-  Write a char in a file 
+  Write a char in a file
   ------------------------------------------------------------*/
 
 /* return the  pos in the file ; RETURN_FAILURE in case of error */
 int writec_ifile(file_desc_t *fd, char c){
 
-  unsigned int ibloc;
+    unsigned int ibloc;
 
-  /* write the char in the buffer */
-  fd->fds_buf[ibloc_of_pos(fd->fds_pos)] = c;
+    /* write the char in the buffer */
+    fd->fds_buf[ibloc_of_pos(fd->fds_pos)] = c;
 
-  /* first write in the bloc ? ensure the data bloc allocation */
-  if (! fd->fds_dirty) {
-    ibloc = vbloc_of_fbloc(fd->fds_inumber, bloc_of_pos(fd->fds_pos), TRUE);
-    if (! ibloc) 
-      return RETURN_FAILURE;
-    fd->fds_dirty = TRUE;
-  }
+    /* first write in the bloc ? ensure the data bloc allocation */
+    if (! fd->fds_dirty) {
+        ibloc = vbloc_of_fbloc(fd->fds_inumber, bloc_of_pos(fd->fds_pos), TRUE);
+        if (! ibloc)
+            return RETURN_FAILURE;
+        fd->fds_dirty = TRUE;
+    }
     
-  /* is the buffer full? */
-  if (ibloc_of_pos(fd->fds_pos) == BLOC_SIZE-1) {
-    /* write the buffer */
-    ibloc = vbloc_of_fbloc(fd->fds_inumber, bloc_of_pos(fd->fds_pos), FALSE);
-    write_bloc(current_vol, ibloc, fd->fds_buf);
-    /* read the new buffer */
-    ibloc = vbloc_of_fbloc(fd->fds_inumber,
-			   bloc_of_pos(fd->fds_pos+1), FALSE);
-    if (! ibloc) 
-      memset(fd->fds_buf, 0, BLOC_SIZE);
-    else
-      read_bloc(current_vol, ibloc, fd->fds_buf);
-    fd->fds_dirty = FALSE;
-  }
+    /* is the buffer full? */
+    if (ibloc_of_pos(fd->fds_pos) == BLOC_SIZE-1) {
+        /* write the buffer */
+        ibloc = vbloc_of_fbloc(fd->fds_inumber, bloc_of_pos(fd->fds_pos), FALSE);
+        write_bloc(current_vol, ibloc, fd->fds_buf);
+        /* read the new buffer */
+        ibloc = vbloc_of_fbloc(fd->fds_inumber,
+                               bloc_of_pos(fd->fds_pos+1), FALSE);
+        if (! ibloc)
+            memset(fd->fds_buf, 0, BLOC_SIZE);
+        else
+            read_bloc(current_vol, ibloc, fd->fds_buf);
+        fd->fds_dirty = FALSE;
+    }
     
-  /* update the file cursor and size */
-  if (fd->fds_size < fd->fds_pos)
-    fd->fds_size = fd->fds_pos;
-  fd->fds_pos++;
+    /* update the file cursor and size */
+    if (fd->fds_size < fd->fds_pos)
+        fd->fds_size = fd->fds_pos;
+    fd->fds_pos++;
     
-  /* the position of the written char */
-  return fd->fds_pos - 1;
+    /* the position of the written char */
+    return fd->fds_pos - 1;
 }
 
 /*------------------------------
@@ -192,88 +196,109 @@ int writec_ifile(file_desc_t *fd, char c){
   ------------------------------------------------------------*/
 int read_ifile(file_desc_t *fd, void *buf, unsigned int nbyte){
 
-  unsigned int i;
-  int c; 
+    unsigned int i;
+    int c;
 
-  /* eof? */
-  if (fd->fds_pos >= fd->fds_size)
-    return READ_EOF; 
+    /* eof? */
+    if (fd->fds_pos >= fd->fds_size)
+        return READ_EOF;
 
-  /* read one by one */
-  for (i = 0; i < nbyte; i++) {
-    if ((c = readc_ifile(fd)) == READ_EOF) {
-      return i; 
+    /* read one by one */
+    for (i = 0; i < nbyte; i++) {
+        if ((c = readc_ifile(fd)) == READ_EOF) {
+            return i;
+        }
+        *((char *)buf+i) = c;
     }
-    *((char *)buf+i) = c; 
-  }
 
-  return i;
+    return i;
 }
 
 /*------------------------------
-  Write to file 
+  Write to file
   ------------------------------------------------------------*/
 int write_ifile(file_desc_t *fd, const void *buf, unsigned int nbyte){
 
-  unsigned i; 
+    unsigned i;
 
-  /* write one by one */
-  for (i = 0; i < nbyte; i++) {
-    if (writec_ifile(fd, *((char *)buf+i)) == RETURN_FAILURE)
-      return RETURN_FAILURE;
-  }
+    /* write one by one */
+    for (i = 0; i < nbyte; i++) {
+        if (writec_ifile(fd, *((char *)buf+i)) == RETURN_FAILURE)
+            return RETURN_FAILURE;
+    }
 
-  return nbyte;
+    return nbyte;
 }
 
 int iopen_ifile(file_desc_t *fd, unsigned int inumber, struct inode_s *inode){
 
-  unsigned int first_bloc;
-  /* we are opening the designed file! */
-  fd->fds_inumber = inumber;
+    unsigned int first_bloc;
+    /* we are opening the designed file! */
+    fd->fds_inumber = inumber;
     
-  /* other trivial init */
-  fd->fds_size = inode->in_size;
-  fd->fds_pos = 0;
+    /* other trivial init */
+    fd->fds_size = inode->in_size;
+    fd->fds_pos = 0;
 
-  /* the buffer is full of zeros if the first bloc is zero, loaded
+    /* the buffer is full of zeros if the first bloc is zero, loaded
      with this first bloc otherwise */
-  first_bloc = vbloc_of_fbloc(inumber, 0, FALSE);
-  if (! first_bloc){
-    memset(fd->fds_buf, 0, BLOC_SIZE);
-  } else {
-    read_bloc(current_vol, first_bloc, fd->fds_buf);
-  }
+    first_bloc = vbloc_of_fbloc(inumber, 0, FALSE);
+    if (! first_bloc){
+        memset(fd->fds_buf, 0, BLOC_SIZE);
+    } else {
+        read_bloc(current_vol, first_bloc, fd->fds_buf);
+    }
 
-  /* last trivial */
-  fd->fds_dirty = FALSE;
+    /* last trivial */
+    fd->fds_dirty = FALSE;
 
-  return RETURN_SUCCESS;
+    return RETURN_SUCCESS;
 }
 
 int mount(unsigned int vol) {
 
-  /* initialise le super du premier volume */
-  init_super(vol);
+    unsigned int i;
 
-  /* charge le super du premier volume dans la variable globale */
-  load_super(vol);
+    /* init hardware */
+    if(!init_hardware(HW_CONFIG)){
+        fprintf(stderr, "Error: Initialization error\n");
+        exit(EXIT_FAILURE);
+    }
 
-  return vol;
+    /* Interreupt handlers */
+    for(i=0; i<16; i++)
+        IRQVECTOR[i] = empty_it;
+
+    /* Allows all IT */
+    _mask(1);
+
+    /* chargement du mbr */
+    if(!load_mbr()){
+        fprintf(stderr, "Erreur lors du chargement du Master Boot Record.");
+        exit(EXIT_FAILURE);
+    }
+
+    /* initialise le super du premier volume */
+    init_super(vol);
+
+    /* charge le super du premier volume dans la variable globale */
+    load_super(vol);
+
+    return vol;
 }
 
 int umount() {
 
-  if(current_vol == CURRENT_VOLUME){
-    fprintf(stderr, "Impossible de démonter le volume principal.\n");
-    return RETURN_FAILURE;
-  }
+    if(current_vol == CURRENT_VOLUME){
+        fprintf(stderr, "Impossible de démonter le volume principal.\n");
+        return RETURN_FAILURE;
+    }
 
-  /* initialise le super du premier volume */
-  init_super(CURRENT_VOLUME);
+    /* initialise le super du premier volume */
+    init_super(CURRENT_VOLUME);
 
-  /* charge le super du premier volume dans la variable globale */
-  load_super(CURRENT_VOLUME);
+    /* charge le super du premier volume dans la variable globale */
+    load_super(CURRENT_VOLUME);
 
-  return CURRENT_VOLUME;
+    return CURRENT_VOLUME;
 }

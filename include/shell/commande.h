@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "filesys/ifile.h"
- #include "filesys/file.h"
+#include "filesys/file.h"
 
 /**
  * \brief Taille maximum d'une commande avec ses options
@@ -35,12 +35,12 @@
  */
 #define MAX_PATH 255
 
-/**
- * \brief Position des commandes par rapport au shell 
- */
-#define COMMAND_PATH ""
-
 extern char* current_path;
+
+int execute(int argc, char** argv);
+int mcd(int argc, char** argv);
+int mmkdir(int argc, char** argv);
+int mcat(int argc, char** argv);
 
 #endif
 

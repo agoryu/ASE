@@ -9,9 +9,8 @@ int main(int argc, char** argv) {
 	unsigned int status;
 	unsigned int i, cpt = 0;
 	unsigned int size;
-	unsigned char* dir_path;
-	unsigned char* test_path;
-	unsigned char* tmp;
+        char* dir_path;
+        char* tmp;
 
 	if(argc < 1) {
 		fprintf(stderr, "Erreur : il manque le nom du dossier à créer\n");
@@ -22,7 +21,7 @@ int main(int argc, char** argv) {
 	dir_path = malloc(sizeof(char) * MAX_PATH);
 	tmp = malloc(sizeof(char) * size);
 
-	strcpy(dir_path, current_path);
+        sprintf(dir_path, "%s", current_path);
 
 	if(strstr(argv[1], "/") == 0) {
 		for(i=0; i<size - 1; i++) {
