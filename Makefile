@@ -14,7 +14,7 @@
 CC	= gcc
 CFLAGS	= -Wall -Werror -Wextra
 CFLAGS  += -ansi -pedantic -m32
-CFLAGS  += -std=gnu11
+CFLAGS  += -O3 -pipe -std=gnu11
 CFLAGS	+= -g
 
 LDFLAGS = -m32
@@ -134,7 +134,8 @@ obj/prodcons.o: 	prodcons.c context/sem.h
 obj/mmu/mi_user.o:	mmu/mi_user.c mmu/mi_syscall.h
 obj/mmu/mi_kernel.o:	mmu/mi_kernel.c mmu/mi_syscall.h
 
-obj/shell/commande.o: shell/commande.c shell/commande.h
+obj/shell/commande.o: 	shell/commande.c shell/commande.h
+
 obj/filesys/file.o:	filesys/file.c filesys/file.h
 obj/filesys/dir.o:	filesys/dir.c filesys/dir.h filesys/ifile.h filesys/tools.h
 obj/filesys/ifile.o:	filesys/ifile.c filesys/ifile.h
