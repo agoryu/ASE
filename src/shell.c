@@ -15,12 +15,16 @@ int main() {
     }
     cpt = 0;
 
-    /* TODO remplacer 0 par le define */
-    mount(0);
+    mount(CURRENT_VOLUME);
 
     /* allocation du path */
     current_path = malloc(sizeof(char) * MAX_PATH);
     *current_path = '/';
+
+    /* creation de la racine si elle n'existe pas */
+    if(inumber_of_path("/") != 0) {
+        add_entry(0, 0, "/");
+    }
 
     /* lancement du shell */
     while(strcmp(entry, "exit\n") != 0) {
@@ -42,12 +46,15 @@ int main() {
             cpt++;
         }
 
-        cpt = 0;
-        num_option = 0;
-        command_length = 0;
+        command[num_option][command_length++] += entry[cpt];
+
         if(strcmp(entry, "exit\n") != 0) {
             execute(num_option, command);
         }
+
+        cpt = 0;
+        num_option = 0;
+        command_length = 0;
     }
 
     umount();

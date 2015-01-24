@@ -12,9 +12,10 @@
 ### Compile options
 ###------------------------------------------------------------
 CC	= gcc
-CFLAGS	= -Wall -Werror -Wextra
+CFLAGS	= -Wall -Werror 
+#CFLAGS	+= -Wextra -O3 -pipe 
 CFLAGS  += -ansi -pedantic -m32
-CFLAGS  += -O3 -pipe -std=gnu11
+CFLAGS  += -std=gnu11
 CFLAGS	+= -g
 
 LDFLAGS = -m32

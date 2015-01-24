@@ -2,19 +2,21 @@
 
 int execute(int argc, char** argv) {
 
-    if(argc < 1) {
+    if(argc < 0) {
         fprintf(stderr, "Erreur : pas assez d'argument dans la fonction d'execution\n");
         return 0;
     }
 
-    if(strcmp(argv[1], "cd") == 0) {
+    if(strstr(argv[1], "cd\n") == 0) {
         return mcd(argc, argv);
-    } else if(strcmp(argv[1], "mkdir") == 0) {
+    } else if(strstr(argv[1], "mkdir\n") == 0) {
         return mmkdir(argc, argv);
-    } else if(strcmp(argv[1], "mkdir") == 0) {
-        return mmkdir(argc, argv);
-    } else if(strcmp(argv[1], "cat") == 0) {
+    } else if(strstr(argv[1], "cat\n") == 0) {
         return mcat(argc, argv);
+    } else if(strstr(argv[1], "ls\n") == 0) {
+        return mls(argc, argv);
+    } else {
+        printf("Commande non reconnu\n");
     }
     return 1;
 }
@@ -25,7 +27,7 @@ int mcd(int argc, char** argv) {
 
     if(argc < 1) {
         strcpy(current_path, "/");
-        return 0;
+        return 1;
     }
 
     if(argv[1][0] == '/') {
@@ -52,7 +54,7 @@ int mcd(int argc, char** argv) {
 
 int mmkdir(int argc, char** argv) {
 
-    unsigned int status;
+    unsigned int status = 0;
     unsigned int i, cpt = 0;
     unsigned int size;
     char* dir_path;
@@ -119,6 +121,18 @@ int mcat(int argc, char** argv) {
 
         printf("%s", buf);
     }
+
+    return 1;
+}
+
+int mls(int argc, char** argv) {
+
+    char* entry = malloc(sizeof(char) * 1024);
+    if(!get_entry(current_path, entry)) {
+        fprintf(stderr, "Erreur lors de la lecture du repertoir.\n");
+        return 0;
+    }
+    printf("%s\n", entry);
 
     return 1;
 }

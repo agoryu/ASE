@@ -49,4 +49,7 @@ struct entry_s {
     char ent_basename[ENTRYMAXLENGTH]; 
 }; 
 
+/* ajouter */
+int get_entry(const char* pathname, char* contain);
+
 #endif

@@ -225,7 +225,7 @@ unsigned int inumber_of_path(const char *pathname){
 	 this entry inumber is the new current */
       icurrent = inumber_of_basename(icurrent, basename); 
       if (! icurrent){
-	return 0;
+	       return 0;
       }
 
       /* skip the basename in pathname */
@@ -277,4 +277,31 @@ unsigned int dinumber_of_path(const char *pathname, const char **basename){
   free(dirname); 
     
   return idirname;
+}
+
+int get_entry(const char* pathname, char* contain) {
+
+  struct inode_s inode; 
+  file_desc_t _fd, *fd = &_fd;
+  struct entry_s entry; 
+  unsigned int idir =  inumber_of_path(pathname);
+    
+  /* recuperation inode */
+  read_inode(idir, &inode); 
+  if (inode.in_type != IT_DIR) 
+    return 0;
+    
+  /* open the dir */
+  iopen_ifile(fd, idir, &inode);
+    
+  /* done */
+  close_ifile(fd); /* even in case of write failure */
+
+  if(read_ifile (fd, &entry, sizeof(struct entry_s)) != 0) {
+    strcpy(contain, entry.ent_basename);
+    return 1;
+  }
+
+  return 0;
+
 }

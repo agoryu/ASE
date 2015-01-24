@@ -41,6 +41,7 @@ int execute(int argc, char** argv);
 int mcd(int argc, char** argv);
 int mmkdir(int argc, char** argv);
 int mcat(int argc, char** argv);
+int mls(int argc, char** argv);
 
 #endif
 

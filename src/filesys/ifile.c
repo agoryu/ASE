@@ -289,10 +289,10 @@ int mount(unsigned int vol) {
 
 int umount() {
 
-    if(current_vol == CURRENT_VOLUME){
+    /*if(current_vol == CURRENT_VOLUME){
         fprintf(stderr, "Impossible de démonter le volume principal.\n");
         return RETURN_FAILURE;
-    }
+    }*/
 
     /* initialise le super du premier volume */
     init_super(CURRENT_VOLUME);

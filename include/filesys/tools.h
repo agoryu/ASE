@@ -27,6 +27,6 @@ int fatal(int assert, const char *fname, const char *fmt, ...);
 /* not yet */
 #define NYI() ffatal(FALSE, "Not Yet Implemented")
 
-char* strdup(const char *s);
+/*char* strdup(const char *s);*/
 
 #endif
