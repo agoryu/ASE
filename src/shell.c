@@ -26,7 +26,10 @@ int main() {
     while(strcmp(entry, "exit\n") != 0) {
 
         printf("prompt %s> ", current_path);
-        fgets(entry, MAX_ENTRY, stdin);
+        if(fgets(entry, MAX_ENTRY, stdin) == NULL) {
+            fprintf(stderr, "Une erreur est survenu lors de l'entré de votre commande\n");
+            continue;
+        }
 
         while(entry[cpt] != '\n') {
 
@@ -42,8 +45,9 @@ int main() {
         cpt = 0;
         num_option = 0;
         command_length = 0;
-
-        execute(num_option, command);
+        if(strcmp(entry, "exit\n") != 0) {
+            execute(num_option, command);
+        }
     }
 
     umount();
