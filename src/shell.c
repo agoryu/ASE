@@ -22,9 +22,8 @@ int main() {
     *current_path = '/';
 
     /* creation de la racine si elle n'existe pas */
-    if(inumber_of_path("/") != 0) {
-        add_entry(0, 0, "/");
-    }
+    create_file("/", IT_DIR);
+    
 
     /* lancement du shell */
     while(strcmp(entry, "exit\n") != 0) {
@@ -49,7 +48,9 @@ int main() {
         command[num_option][command_length++] += entry[cpt];
 
         if(strcmp(entry, "exit\n") != 0) {
-            execute(num_option, command);
+            if(!execute(num_option, command)) {
+                fprintf(stderr, "La commande n'a pas fonctionné.\n");
+            }
         }
 
         cpt = 0;

@@ -82,8 +82,10 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
     
   /* a directory inode? */
   read_inode(idir, &inode); 
-  if (inode.in_type != IT_DIR) 
+  if (inode.in_type != IT_DIR) {
+    printf("racine non existante\n");
     return RETURN_FAILURE;
+  }
     
   /* open the dir */
   iopen_ifile(fd, idir, &inode);

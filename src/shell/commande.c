@@ -85,6 +85,8 @@ int mmkdir(int argc, char** argv) {
         if(inumber_of_path(dir_path) != 0) {
             strcat(dir_path, tmp);
             status = create_file(dir_path, IT_DIR);
+        } else {
+            fprintf(stderr, "Le dossier dans lequel vous souhaitez créer un dossier n'existe pas.\n");
         }
 
     } else {
