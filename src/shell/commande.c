@@ -2,23 +2,29 @@
 
 int execute(int argc, char** argv) {
 
+    unsigned i;
+
     if(argc < 0) {
         fprintf(stderr, "Erreur : pas assez d'argument dans la fonction d'execution\n");
         return 0;
     }
 
-    if(strstr(argv[1], "cd\n") == 0) {
+    if(strcmp(argv[0], "cd") == 0) {
         return mcd(argc, argv);
-    } else if(strstr(argv[1], "mkdir\n") == 0) {
+
+    } else if(strcmp(argv[0], "mkdir") == 0) {
         return mmkdir(argc, argv);
-    } else if(strstr(argv[1], "cat\n") == 0) {
+
+    } else if(strcmp(argv[0], "cat") == 0) {
         return mcat(argc, argv);
-    } else if(strstr(argv[1], "ls\n") == 0) {
+
+    } else if(strcmp(argv[0], "ls") == 0) {
         return mls(argc, argv);
+
     } else {
         printf("Commande non reconnu\n");
+        return 0;
     }
-    return 1;
 }
 
 int mcd(int argc, char** argv) {
@@ -65,7 +71,9 @@ int mmkdir(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
+    /* taille du nouveau dossier */
     size = strlen(argv[1]);
+    /* future chaine contenant le chemin absolu du nouveau dossier */
     dir_path = malloc(sizeof(char) * MAX_PATH);
     tmp = malloc(sizeof(char) * size);
 
@@ -90,7 +98,12 @@ int mmkdir(int argc, char** argv) {
         }
 
     } else {
-        sprintf(dir_path, "%s/%s", dir_path, argv[1]);
+        if(strcmp(dir_path, "/") == 0) {
+            sprintf(dir_path, "/%s", argv[1]);
+        } else {
+            sprintf(dir_path, "%s/%s", dir_path, argv[1]);
+        }
+        
         status = create_file(dir_path, IT_DIR);
     }
 
@@ -130,11 +143,17 @@ int mcat(int argc, char** argv) {
 int mls(int argc, char** argv) {
 
     char* entry = malloc(sizeof(char) * 1024);
+    
     if(!get_entry(current_path, entry)) {
         fprintf(stderr, "Erreur lors de la lecture du repertoir.\n");
         return 0;
+    } 
+
+    if(strcmp(entry, "") == 0) {
+        printf("Le dossier est vide\n");
+    } else {
+        printf("%s\n", entry);
     }
-    printf("%s\n", entry);
 
     return 1;
 }

@@ -22,11 +22,20 @@ int main() {
     *current_path = '/';
 
     /* creation de la racine si elle n'existe pas */
-    create_file("/", IT_DIR);
+    /*create_file("/", IT_DIR);*/
     
 
     /* lancement du shell */
     while(strcmp(entry, "exit\n") != 0) {
+
+        /* reinitialisation de tous les parametre pour la prochaine commande */
+        memset(entry, '\0', MAX_ENTRY);
+        for(cpt=0; cpt<MAX_COMMAND; cpt++) {
+            memset(command[cpt], '\0', MAX_OPTION);
+        }
+        cpt = 0;
+        num_option = 0;
+        command_length = 0;
 
         printf("prompt %s> ", current_path);
         if(fgets(entry, MAX_ENTRY, stdin) == NULL) {
@@ -39,23 +48,23 @@ int main() {
             /* creation de la commande */
             if(entry[cpt] == ' ') {
                 num_option++;
+                command_length = 0;
             } else {
                 command[num_option][command_length++] += entry[cpt];
             }
             cpt++;
         }
 
-        command[num_option][command_length++] += entry[cpt];
+        printf("entry = %s\n", entry);
 
         if(strcmp(entry, "exit\n") != 0) {
             if(!execute(num_option, command)) {
                 fprintf(stderr, "La commande n'a pas fonctionné.\n");
-            }
+            } 
+        } else {
+            printf("en revoir HAL\n");
         }
-
-        cpt = 0;
-        num_option = 0;
-        command_length = 0;
+    
     }
 
     umount();

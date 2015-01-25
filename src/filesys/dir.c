@@ -290,8 +290,11 @@ int get_entry(const char* pathname, char* contain) {
     
   /* recuperation inode */
   read_inode(idir, &inode); 
-  if (inode.in_type != IT_DIR) 
+  if (inode.in_type != IT_DIR)  {
+    fprintf(stderr, "Le premier parametre de get_entry n'est pas un dossier\n");
     return 0;
+  }
+    
     
   /* open the dir */
   iopen_ifile(fd, idir, &inode);
@@ -300,6 +303,7 @@ int get_entry(const char* pathname, char* contain) {
   close_ifile(fd); /* even in case of write failure */
 
   if(read_ifile (fd, &entry, sizeof(struct entry_s)) != 0) {
+    printf("basename = %s\n", entry.ent_basename);
     strcpy(contain, entry.ent_basename);
     return 1;
   }
