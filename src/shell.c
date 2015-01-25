@@ -8,6 +8,7 @@ int main() {
     char entry[MAX_ENTRY];
     char* command[MAX_COMMAND];
     int cpt = 0, num_option = 0, command_length = 0;
+    int inumber_racine;
 
     /* allocation des options de la commande */
     for(cpt=0; cpt < MAX_COMMAND; cpt++) {
@@ -22,7 +23,13 @@ int main() {
     *current_path = '/';
 
     /* creation de la racine si elle n'existe pas */
-    /*create_file("/", IT_DIR);*/
+    /* creation un peu radical qui fait des degat */
+    /*if(inumber_of_path("/") == 0) {
+        inumber_racine = create_ifile(IT_DIR);
+        add_entry(inumber_racine, inumber_racine, "/");
+    } else {
+        printf("racine existante\n");
+    }*/
     
 
     /* lancement du shell */
@@ -54,8 +61,6 @@ int main() {
             }
             cpt++;
         }
-
-        printf("entry = %s\n", entry);
 
         if(strcmp(entry, "exit\n") != 0) {
             if(!execute(num_option, command)) {

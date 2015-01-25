@@ -1,8 +1,6 @@
-#include "shell/commande.h"
+﻿#include "shell/commande.h"
 
 int execute(int argc, char** argv) {
-
-    unsigned i;
 
     if(argc < 0) {
         fprintf(stderr, "Erreur : pas assez d'argument dans la fonction d'execution\n");
@@ -77,9 +75,14 @@ int mmkdir(int argc, char** argv) {
     dir_path = malloc(sizeof(char) * MAX_PATH);
     tmp = malloc(sizeof(char) * size);
 
-    sprintf(dir_path, "%s", current_path);
+    /* on met la racine dans dir path */
+    strcpy(dir_path, current_path);
 
+    /* si la chaine contient des / il faut vérifier que le dossier existe */
     if(strstr(argv[1], "/") == 0) {
+
+        /* suppression du dernier dossier de la chaine 
+        qui n'existe pas puisqu'il faut le créer */
         for(i=0; i<size - 1; i++) {
             if(argv[1][i] == '/') {
                 strcat(dir_path, tmp);
@@ -90,7 +93,8 @@ int mmkdir(int argc, char** argv) {
             }
         }
 
-        if(inumber_of_path(dir_path) != 0) {
+        /* si le dossier existe alors on concatene le chemin du dossier courant au nouveau dossier */
+        if( (inumber_of_path (dir_path) != 0) || (strcmp (dir_path, "/") == 0) ) {
             strcat(dir_path, tmp);
             status = create_file(dir_path, IT_DIR);
         } else {
@@ -98,6 +102,7 @@ int mmkdir(int argc, char** argv) {
         }
 
     } else {
+        /* chemin different si on est a la racine */
         if(strcmp(dir_path, "/") == 0) {
             sprintf(dir_path, "/%s", argv[1]);
         } else {

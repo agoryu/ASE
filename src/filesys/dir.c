@@ -83,7 +83,7 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
   /* a directory inode? */
   read_inode(idir, &inode); 
   if (inode.in_type != IT_DIR) {
-    printf("racine non existante\n");
+    fprintf(stderr, "Le idir de add_entry n'est pas un dossier\n");
     return RETURN_FAILURE;
   }
     

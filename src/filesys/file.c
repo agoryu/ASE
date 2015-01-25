@@ -23,13 +23,17 @@ create_file(const char *pathname, file_type_t type)
     
     /* does the directory exist? */
     idir = dinumber_of_path(pathname, &basename); 
-    if (! idir)
-	return RETURN_FAILURE;
+    if (! idir) {
+      fprintf(stderr, "Le dossier n'existe pas dans create file.\n");
+	   return RETURN_FAILURE;
+   }
 
     /* create the file */
     inumber = create_ifile(type);
-    if (! inumber)
-	return RETURN_FAILURE;
+    if (! inumber) {
+      fprintf(stderr, "La creation du fichier a échoué\n");
+	   return RETURN_FAILURE;
+   }
 
     /*  link the file in his directory */
     status = add_entry(idir, inumber, basename);
