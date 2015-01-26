@@ -38,6 +38,8 @@ struct super_s {
   unsigned super_first_free;
   /** nombre de bloc libre dans la liste de bloc */
   unsigned super_n_free;
+  /** inumber du root*/
+  unsigned super_iroot;
 };
 
 
@@ -56,7 +58,12 @@ struct free_bloc_s {
  * Initialise le super bloc d'un volume
  * \param[in] vol numéro du volume à initialiser
  */
-void init_super(const unsigned int vol);
+void init_super(const unsigned vol);
+
+/**
+ * Initialise le répertoire root pour le volume monté.
+ */
+unsigned init_root(const unsigned int vol);
 
 /* TODO
  * Monte le volume \a vol comme volume courrant.
@@ -76,8 +83,14 @@ void init_super(const unsigned int vol);
  * \param[in] vol numéro du volume à charger
  * \return 1 si le chargement a fonctionné, 0 sinon
  */
-int load_super(const unsigned int vol);
+int load_super(const unsigned vol);
 
+/**
+ * Initialise le répertoire root pour le volume monté avec le
+ * inumber \a root_inumber.
+ * \param[in] root_inumber inumber de la racine.
+ */
+unsigned init_root(const unsigned root_inumber);
 
 /**
  * Retourne le numéro d'un bloc libre sur le volume 
@@ -98,7 +111,7 @@ void free_bloc(const unsigned int bloc);
  * \brief Libère plusieurs blocs dans la liste de bloc
  * \param[in] bloc numéro du bloc à libérer
  */
-void free_blocs(const unsigned int * blocs, const size_t size);
+void free_blocs(const unsigned * blocs, const size_t size);
 
 /**
  * Vérifie si le disque courant est rempli

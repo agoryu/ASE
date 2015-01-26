@@ -40,6 +40,8 @@ static unsigned int new_entry(file_desc_t *fd){
       return ientry;
     ientry++;
   }
+
+  /*printf("not new entry\n");*/
     
   /* need to append an entry in the dir */
   return ientry;

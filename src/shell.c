@@ -1,5 +1,7 @@
 #include "shell/commande.h"
 #include "filesys/vol.h"
+#include "filesys/ifile.h"
+#include "filesys/inode.h"
 
 char* current_path;
 
@@ -7,8 +9,11 @@ int main() {
 
     char entry[MAX_ENTRY];
     char* command[MAX_COMMAND];
+    char* root_name;
     int cpt = 0, num_option = 0, command_length = 0;
-    int inumber_racine;
+    unsigned inumber_racine;
+    file_desc_t fd;
+    struct inode_s inode;
 
     /* allocation des options de la commande */
     for(cpt=0; cpt < MAX_COMMAND; cpt++) {
@@ -22,14 +27,23 @@ int main() {
     current_path = malloc(sizeof(char) * MAX_PATH);
     *current_path = '/';
 
+    root_name = malloc(sizeof(char) * ENTRYMAXLENGTH);
+    *root_name = '/';
+
     /* creation de la racine si elle n'existe pas */
     /* creation un peu radical qui fait des degat */
-    /*if(inumber_of_path("/") == 0) {
-        inumber_racine = create_ifile(IT_DIR);
-        add_entry(inumber_racine, inumber_racine, "/");
+    if(inumber_of_path("/") == 0) {
+      inumber_racine = create_ifile(IT_DIR);
+      add_entry(inumber_racine, inumber_racine, root_name);
     } else {
-        printf("racine existante\n");
-    }*/
+      fprintf(stderr, "Racine existante\n");
+    }
+    
+    open_ifile(&fd, inumber_racine);
+    read_inode(inumber_racine, &inode);
+    if(inode.in_type == IT_DIR){
+      printf("La racine est un dossier\n");
+    }
     
 
     /* lancement du shell */

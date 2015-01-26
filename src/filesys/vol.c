@@ -64,7 +64,6 @@ void init_super(const unsigned int vol) {
 
 }
 
-
 int load_super(const unsigned int vol) {
 
   if(!is_correct_volume(vol)){
@@ -78,7 +77,19 @@ int load_super(const unsigned int vol) {
   return is_init_super(current_super);
 }
 
-unsigned int save_current_super(const unsigned int vol){
+unsigned init_root(const unsigned root_inumber){
+
+  if(!is_init_super(current_super)){
+    fprintf(stderr, "Super bloc non initialisé.\n");
+    return 0;
+  }
+
+  current_super.super_iroot = root_inumber;
+  return 1;
+
+}
+
+unsigned save_current_super(const unsigned int vol){
   
   if(!is_correct_volume(vol)){
     fprintf(stderr, "Volume %d correct.\n", vol+1);

@@ -12,9 +12,9 @@
 ### Compile options
 ###------------------------------------------------------------
 CC	= gcc
-CFLAGS	= -Wall -Werror 
-#CFLAGS	+= -Wextra -O3 -pipe 
+CFLAGS	= -Wall -Werror #-Wextra
 CFLAGS  += -ansi -pedantic -m32
+#CFLAGS	+= -O3 -pipe -std=gnu11
 CFLAGS  += -std=gnu11
 CFLAGS	+= -g
 
@@ -204,7 +204,7 @@ cleandisk:
 cleandoc:
 	$(RM) -R $(DOCDIR)
 
-realclean: clean cleanbin cleandisk cleandoc
+realclean: clean cleanbin cleandisk
 
 doc: doxygen.ini
 	doxygen $<
