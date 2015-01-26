@@ -1,7 +1,8 @@
+#include "hw/hw.h"
 #include "filesys/mbr.h"
 
 static void empty_it(){
-    return;
+  return;
 }
 
 void usage(char* name){
@@ -26,28 +27,14 @@ int main(int argc, char* argv[]){
   unsigned nb_bloc = 4;
   int i;
 
-
-  /*vérification des arguments entree par l'utilisateur */
-  if(argc != 7 || (argc>1  && strcmp(argv[1], "-h")==0)){
-    usage(argv[0]);
+  /* init materiels */
+  if(!boot()){
+    fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
   }
-
-  /* init hardware */
-  if(!init_hardware(HW_CONFIG)){
-    fprintf(stderr, "Error: Initialization error\n");
-    exit(EXIT_FAILURE);
-  }
-
-  /* Interreupt handlers */
-  for(i=0; i<16; i++)
-    IRQVECTOR[i] = empty_it;
-
-  /* Allows all IT */
-  _mask(1);
 
   /* chargement du mbr */
   if(!load_mbr()){
-    fprintf(stderr, "Erreur lors du chargement du Master Boot Record.");
+    fprintf(stderr, "ERROR: lors du chargement du Master Boot Record.");
     exit(EXIT_FAILURE);
   }
 
@@ -70,12 +57,12 @@ int main(int argc, char* argv[]){
 
   /* gestion des erreur d'arguments */
   if(nb_bloc <= 0 || nb_bloc>=(HDA_MAXCYLINDER*HDA_MAXSECTOR)){
-    perror("La taille du volume impossible.\n");
+    fprintf(stderr, "ERROR: La taille du volume impossible.\n");
     exit(EXIT_FAILURE);
   }
 
   if(fc>HDA_MAXCYLINDER){
-    perror("Cylindre possible.\n");
+    fprintf(stderr, "ERROR: Cylindre possible.\n");
     exit(EXIT_FAILURE);
   }
 
@@ -85,14 +72,13 @@ int main(int argc, char* argv[]){
   }
 
   if(fc==0 && fs==0) {
-    fprintf(stderr, "Erreur: Possible de creer un volume a la place du Master Boot Record.\n");
+    fprintf(stderr, "ERROR: Possible de creer un volume a la place du Master Boot Record.\n");
     exit(EXIT_FAILURE);
   }
   
   /* creation du volume */
   if(!make_vol(fc, fs, nb_bloc)){
-    fprintf(stderr, "Erreur lors de la creation du volume.\n");
-    fprintf(stderr, "La creation du volume est impossible ");
+    fprintf(stderr, "ERROR: La creation du volume est impossible ");
     fprintf(stderr, "avec les carateristiques donnees en parametre.\n");
     exit(EXIT_FAILURE);
   }

@@ -20,6 +20,8 @@
 typedef void (irq_handler_func_t)(void); 
 
 #define TIMER_IRQ	2
+/** Nom du fichier d'initialisation du materiel */
+#define HW_CONFIG "etc/hardware.ini"
 
 void setup_irq(unsigned int irq, irq_handler_func_t handler);
 void start_hw();
@@ -28,7 +30,8 @@ void irq_disable();
 void irq_enable(); 
 
 /**
- * Initialise le matériel. Initialise, crée le disque si besoin, TODO 
+ * Initialise le matériel. Initialise le disque virtuel, le crée si 
+ * nécessaire. Initialise les interruptions matériels. 
  */
 unsigned boot();
 

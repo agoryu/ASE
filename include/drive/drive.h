@@ -17,9 +17,6 @@
 #include "hw/hardware.h"
 
 
-/** Nom du fichier d'initialisation du materiel */
-#define HW_CONFIG "etc/hardware.ini"
-
 #define ENABLE_HDA      1 
 #define HDA_FILENAME    "vdiskA.bin"
 #define HDA_CMDREG      0x3F6
