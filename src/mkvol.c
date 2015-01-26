@@ -1,5 +1,4 @@
-#include "filesys/vol.h"
-#include <unistd.h>
+#include "filesys/mbr.h"
 
 static void empty_it(){
     return;
@@ -97,9 +96,6 @@ int main(int argc, char* argv[]){
     fprintf(stderr, "avec les carateristiques donnees en parametre.\n");
     exit(EXIT_FAILURE);
   }
-
-  /* initialise le super du volume 1 */
-  init_super(current_vol);
 
   /* sauvegarde de tous les changements effectué sur le mbr */
   save_mbr();

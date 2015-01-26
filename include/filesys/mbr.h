@@ -22,6 +22,9 @@
 /** Variable globale du Master Boot Record disponible pour les couches supérieurs */
 extern struct mbr_s mbr;
 
+/** Le volume courrant utile pour les couches supérieurs */
+extern int current_vol;
+
 /**
  * \Brief Type de volume
  * \enum vol_type_e mbr.h "mbr.h"

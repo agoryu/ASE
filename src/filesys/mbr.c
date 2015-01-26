@@ -1,8 +1,8 @@
 #include "filesys/mbr.h"
-#include "filesys/vol.h"
 
 
 struct mbr_s mbr;
+int current_vol;
 
 
 /* Fonction du fichier mbr.c
@@ -214,7 +214,7 @@ unsigned display_vol(){
   printf("Il y a %d volume(s) sur le disque.\n\n", nvol);
 
   for(i=0; i<nvol; i++){
-    printf("Volume %d:\n", i+1);
+    printf("Volume indice %d:\n", i);
     printf("\t - Commence au cylindre %d.\n", mbr.mbr_vol[i].vol_first_cylinder); 
     printf("\t - Commence au secteur %d.\n", mbr.mbr_vol[i].vol_first_sector);
     printf("\t - Nombre de blocs : %d.\n", mbr.mbr_vol[i].vol_n_sector);

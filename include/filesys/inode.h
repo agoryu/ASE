@@ -1,7 +1,7 @@
 #ifndef INODE_H_
 #define INODE_H_
 
-#include "filesys/vol.h"
+#include "filesys/super.h"
 
 /**
  * \file inode.h

@@ -27,4 +27,9 @@ void start_hw();
 void irq_disable();
 void irq_enable(); 
 
+/**
+ * Initialise le matériel. Initialise, crée le disque si besoin, TODO 
+ */
+unsigned boot();
+
 #endif

@@ -49,7 +49,8 @@ BINPATHS = ${addprefix $(BINDIR)/, $(BINARIES)}
 
 OBJECTS  = ${addsuffix .o, $(BINARIES)}
 OBJECTS += ${addprefix mmu/, ${addsuffix .o, mi_kernel mi_user}}
-OBJECTS += ${addprefix filesys/, ${addsuffix .o, mbr vol inode ifile dir file}}
+OBJECTS += ${addprefix filesys/, \
+	   ${addsuffix .o, mbr super inode ifile dir file}}
 OBJECTS += ${addprefix drive/, ${addsuffix .o, drive}}
 OBJECTS += ${addprefix context/, ${addsuffix .o, context sem}}
 OBJECTS += ${addprefix hw/, ${addsuffix .o, hw}}
@@ -82,19 +83,19 @@ bin/shell:\
 	obj/filesys/dir.o obj/filesys/tools.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
-bin/dfs:\
-	obj/dfs.o obj/filesys/vol.o \
+bin/mknfs:\
+	obj/mknfs.o obj/filesys/super.o \
 	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
-bin/mknfs:\
-	obj/mknfs.o obj/filesys/vol.o \
-	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+bin/dfs:\
+	obj/dfs.o obj/filesys/mbr.o \
+	obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mkvol:\
-	obj/mkvol.o obj/filesys/vol.o \
-	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+	obj/mkvol.o obj/filesys/mbr.o \
+	obj/drive/drive.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/frmt:\
@@ -120,13 +121,13 @@ bin:
 ###------------------------------
 ### Compile source
 ###------------------------------------------------------------
-obj/shell.o:		shell.c shell/commande.h filesys/vol.h
+obj/shell.o:		shell.c shell/commande.h
 obj/writefile.o:	writefile.c filesys/inode.h filesys/ifile.h filesys/tools.h
 obj/readfile.o:		readfile.c filesys/inode.h filesys/ifile.h filesys/tools.h
 obj/mkfile.o:		mkfile.c filesys/inode.h filesys/ifile.h filesys/tools.h
-obj/dfs.o:		dfs.c filesys/vol.h
-obj/mknfs.o:		mknfs.c filesys/vol.h
-obj/mkvol.o:		mkvol.c filesys/vol.h
+obj/mknfs.o:		mknfs.c filesys/super.h
+obj/dfs.o:		dfs.c filesys/mbr.h
+obj/mkvol.o:		mkvol.c filesys/mbr.h
 obj/frmt.o:		frmt.c drive/drive.h
 obj/strs.o:		strs.c drive/drive.h
 obj/dmps.o:		dmps.c drive/drive.h
@@ -141,7 +142,7 @@ obj/filesys/file.o:	filesys/file.c filesys/file.h
 obj/filesys/dir.o:	filesys/dir.c filesys/dir.h filesys/ifile.h filesys/tools.h
 obj/filesys/ifile.o:	filesys/ifile.c filesys/ifile.h
 obj/filesys/inode.o:	filesys/inode.c filesys/inode.h
-obj/filesys/vol.o:	filesys/vol.c filesys/vol.h
+obj/filesys/super.o:	filesys/super.c filesys/super.h
 obj/filesys/mbr.o:	filesys/mbr.c filesys/mbr.h
 
 obj/drive/drive.o:	drive/drive.c drive/drive.h
