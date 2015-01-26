@@ -6,7 +6,6 @@ static struct super_s current_super;
 
 unsigned int is_init_super(const struct super_s super);
 unsigned int is_correct_volume(const unsigned int vol);
-unsigned int save_current_super(const unsigned int vol);
 
 
 unsigned int is_init_super(const struct super_s super){
@@ -60,11 +59,12 @@ void init_super(const unsigned int vol) {
   free_size = mbr.mbr_vol[vol].vol_n_sector - 1;
 
   super.super_n_free = free_size;
+
   write_bloc_n(vol, SUPER_BLOC, (unsigned char*)&super, sizeof(struct super_s));
 
 }
 
-int load_super(const unsigned int vol) {
+unsigned load_super(const unsigned int vol) {
 
   if(!is_correct_volume(vol)){
     fprintf(stderr, "Impossible de charger le super bloc du volume %d.\n", vol+1);
@@ -89,14 +89,14 @@ unsigned init_root(const unsigned root_inumber){
 
 }
 
-unsigned save_current_super(const unsigned int vol){
+unsigned save_current_super(){
   
-  if(!is_correct_volume(vol)){
-    fprintf(stderr, "Volume %d correct.\n", vol+1);
+  if(!is_correct_volume(current_vol)){
+    fprintf(stderr, "Volume %d correct.\n", current_vol+1);
     return 0;
   }
 
-  write_bloc_n(vol, SUPER_BLOC, (unsigned char*)&current_super, sizeof(struct super_s));
+  write_bloc_n(current_vol, SUPER_BLOC, (unsigned char*)&current_super, sizeof(struct super_s));
   return 1;
 }
 

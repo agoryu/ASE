@@ -83,7 +83,7 @@ unsigned init_root(const unsigned int vol);
  * \param[in] vol numéro du volume à charger
  * \return 1 si le chargement a fonctionné, 0 sinon
  */
-int load_super(const unsigned vol);
+unsigned load_super(const unsigned vol);
 
 /**
  * Initialise le répertoire root pour le volume monté avec le
@@ -91,6 +91,11 @@ int load_super(const unsigned vol);
  * \param[in] root_inumber inumber de la racine.
  */
 unsigned init_root(const unsigned root_inumber);
+
+/**
+ * TODO doc
+ */
+unsigned save_current_super();
 
 /**
  * Retourne le numéro d'un bloc libre sur le volume 

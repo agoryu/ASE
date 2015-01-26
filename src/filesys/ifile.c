@@ -20,10 +20,6 @@
 /* the index in a bloc of given character position in a file */  
 #define ibloc_of_pos(pos) ((pos) % BLOC_SIZE)
 
-static void empty_it(){
-    return;
-}
-
 /*------------------------------
   Create and delete file
   ------------------------------------------------------------*/
@@ -257,34 +253,8 @@ int iopen_ifile(file_desc_t *fd, unsigned int inumber, struct inode_s *inode){
 
 int mount(unsigned int vol) {
 
-    unsigned int i;
-
-    /* init hardware */
-    if(!init_hardware(HW_CONFIG)){
-        fprintf(stderr, "Error: Initialization error\n");
-        exit(EXIT_FAILURE);
-    }
-
-    /* Interreupt handlers */
-    for(i=0; i<16; i++)
-        IRQVECTOR[i] = empty_it;
-
-    /* Allows all IT */
-    _mask(1);
-
-    /* chargement du mbr */
-    if(!load_mbr()){
-        fprintf(stderr, "Erreur lors du chargement du Master Boot Record.");
-        exit(EXIT_FAILURE);
-    }
-
-    /* initialise le super du premier volume */
-    init_super(vol);
-
     /* charge le super du premier volume dans la variable globale */
-    load_super(vol);
-
-    return vol;
+    return load_super(vol);
 }
 
 int umount() {
@@ -295,10 +265,10 @@ int umount() {
     }*/
 
     /* initialise le super du premier volume */
-    init_super(CURRENT_VOLUME);
+    /*init_super(CURRENT_VOLUME);*/
 
     /* charge le super du premier volume dans la variable globale */
-    load_super(CURRENT_VOLUME);
+    save_current_super();
 
     return CURRENT_VOLUME;
 }

@@ -3,6 +3,10 @@
 #include "filesys/ifile.h"
 #include "filesys/inode.h"
 
+static void empty_it(){
+    return;
+}
+
 char* current_path;
 
 int main() {
@@ -12,16 +16,39 @@ int main() {
     char* root_name;
     int cpt = 0, num_option = 0, command_length = 0;
     unsigned inumber_racine;
+    unsigned i;
     file_desc_t fd;
     struct inode_s inode;
+
+    /* init hardware */
+    if(!init_hardware(HW_CONFIG)){
+        fprintf(stderr, "Error: Initialization error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Interreupt handlers */
+    for(i=0; i<16; i++)
+        IRQVECTOR[i] = empty_it;
+
+    /* Allows all IT */
+    _mask(1);
+
+    /* chargement du mbr */
+    if(!load_mbr()){
+        fprintf(stderr, "Erreur lors du chargement du Master Boot Record.");
+        exit(EXIT_FAILURE);
+    }
+
+    if(!mount(CURRENT_VOLUME)){
+      fprintf(stderr, "Impossible de monté le disque principal.");
+      exit(EXIT_FAILURE);
+    }
 
     /* allocation des options de la commande */
     for(cpt=0; cpt < MAX_COMMAND; cpt++) {
         command[cpt] = malloc(MAX_OPTION * sizeof(char));
     }
     cpt = 0;
-
-    mount(CURRENT_VOLUME);
 
     /* allocation du path */
     current_path = malloc(sizeof(char) * MAX_PATH);

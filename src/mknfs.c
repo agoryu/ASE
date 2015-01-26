@@ -16,9 +16,7 @@ void usage(char* name){
 int main(int argc, char* argv[]){
 
   unsigned int i;
-  unsigned fc = 0;
-  unsigned fs = 1;
-  unsigned nb_bloc = 10;
+  char* root_name;
 
   if(argc != 1){
     usage(argv[0]);
@@ -43,24 +41,34 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
 
-  if(mbr.mbr_n_vol < 1) {
+  /* initialise le super du volume 1 */
+  init_super(CURRENT_VOLUME);
 
-    /* creation d'un volume bidon */
-    if(!make_vol(fc, fs, nb_bloc)) {
-      fprintf(stderr, "Erreur a la creation d'un volume bidon.\n");
-      exit(EXIT_FAILURE);
-    }
+  if(!load_super(CURRENT_VOLUME)){
+    fprintf(stderr, "Super bloc invalide.\n");
+  }
+  
+  root_name = malloc(sizeof(char) * ENTRYMAXLENGTH);
+  *root_name = '/';
 
-    /* initialise le super du volume 1 */
-    init_super(current_vol);
-
-    printf("Le volume principale a été créé avec succès.\n");
-
-    /* sauvegarde de tous les changements effectué sur le mbr */
-    save_mbr();
+  /* creation de la racine si elle n'existe pas */
+  /* creation un peu radical qui fait des degat */
+  if(inumber_of_path("/") == 0) {
+    inumber_racine = create_ifile(IT_DIR);
+    add_entry(inumber_racine, inumber_racine, root_name);
   } else {
-    printf("Le volume principale a déjà été créé!\n");
+    fprintf(stderr, "Racine existante\n");
   }
 
-  exit(EXIT_SUCCESS);
+  init_root();
+
+  printf("Le volume principale a été créé avec succès.\n");
+
+  /* sauvegarde de tous les changements effectué sur le mbr */
+  save_mbr();
+} else {
+  printf("Le volume principale a déjà été créé!\n");
+ }
+
+exit(EXIT_SUCCESS);
 }
