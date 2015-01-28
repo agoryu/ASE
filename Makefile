@@ -64,10 +64,12 @@ LIBRARIES = lib/libhardware.a
 
 LIBFLAGS = -L$(LIBDIR) -lhardware
 
+
 ###------------------------------
 ### Main targets 
 ###------------------------------------------------------------
 all: $(BINPATHS) $(OBJPATHS) $(RESSOURCES) $(LIBRARIES) bin/mmutest
+
 
 ###------------------------------
 ### Make binaries
@@ -112,11 +114,12 @@ bin/dmps:\
 
 bin/prodcons:\
 	obj/prodcons.o obj/context/sem.o \
-	obj/context/context.o obj/hw/hw.o | $(BINDIR)
+	obj/context/context.o obj/hw/hw.o hw/hardware.h | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 bin:
 	mkdir -p $(BINDIR)
+
 
 ###------------------------------
 ### Compile source
@@ -150,10 +153,12 @@ obj/drive/drive.o:	drive/drive.c drive/drive.h
 obj/context/sem.o: 	context/sem.c context/sem.h
 obj/context/context.o: 	context/context.c context/context.h
 
-obj/hw/hw.o: 		hw/hw.c hw/hw.h
+obj/hw/hw.o: 		hw/hw.c hw/hw.h hw/hardware.h
 
 
-
+###------------------------------
+### Make object directories
+###------------------------------------------------------------
 obj/%.o: %.c | $(OBJDIRS)
 	$(CC) $(CFLAGS) -I$(INCDIR) -o $@ -c $<
 
@@ -181,6 +186,13 @@ obj/hw:
 obj/shell:
 	mkdir -p $(OBJDIR)
 	mkdir -p $@
+
+
+###------------------------------
+### Makefly checker
+###------------------------------------------------------------
+check-syntax:
+	$(CC) $(CFLAGS) -I$(INCDIR) -o nul -S $(CHK_SOURCES) 
 
 
 ###------------------------------
