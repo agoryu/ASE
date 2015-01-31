@@ -13,22 +13,22 @@ unsigned int is_init_super(const struct super_s super){
 unsigned int is_correct_volume(const unsigned int vol){
   if(vol > MAX_VOL) {
     fprintf(stderr, 
-	    "Numero de volume supérieur au nombre de volumes autorisés sur le disque.\n");
+	    "ERROR: Numero de volume supérieur au nombre de volumes autorisés sur le disque.\n");
     return 0;
   }
 
   if(mbr.mbr_magic != MBR_MAGIC){
-    fprintf(stderr, "Le master boot record n'est pas initialisé.\n");
+    fprintf(stderr, "ERROR: Le master boot record n'est pas initialisé.\n");
     return 0;
   }
 
   if(mbr.mbr_n_vol == 0){
-    fprintf(stderr, "Il n'y a pas de volume dans votre disque.\n");
+    fprintf(stderr, "ERROR: Il n'y a pas de volume dans votre disque.\n");
     return 0;
   }
 
   if(vol >= mbr.mbr_n_vol){
-    fprintf(stderr, "Le volume %d n'existe pas, sur le disque.\n", vol+1);
+    fprintf(stderr, "ERROR: Le volume %d n'existe pas, sur le disque.\n", vol+1);
     return 0;
   }
 
@@ -42,7 +42,7 @@ void init_super(const unsigned int vol) {
   unsigned int free_size;
 
   if(!is_correct_volume(vol)){
-    fprintf(stderr, "Impossible d'initialiser un super bloc pour le volume %d.\n", vol+1);
+    fprintf(stderr, "ERROR: Impossible d'initialiser un super bloc pour le volume %d.\n", vol+1);
     return;
   }
 
@@ -65,7 +65,7 @@ void init_super(const unsigned int vol) {
 unsigned load_super(const unsigned int vol) {
 
   if(!is_correct_volume(vol)){
-    fprintf(stderr, "Impossible de charger le super bloc du volume %d.\n", vol+1);
+    fprintf(stderr, "ERROR: Impossible de charger le super bloc du volume %d.\n", vol+1);
     return 0;
   }
 
@@ -78,7 +78,7 @@ unsigned load_super(const unsigned int vol) {
 unsigned init_root(const unsigned root_inumber){
 
   if(!is_init_super(current_super)){
-    fprintf(stderr, "Super bloc non initialisé.\n");
+    fprintf(stderr, "ERROR: Super bloc non initialisé.\n");
     return 0;
   }
 
@@ -87,10 +87,20 @@ unsigned init_root(const unsigned root_inumber){
 
 }
 
+unsigned mount(unsigned vol){
+  /* TODO */
+  return 0;
+}
+
+unsigned umount(){
+  /* TODO */
+  return 0;
+}
+
 unsigned save_current_super(){
   
   if(!is_correct_volume(current_vol)){
-    fprintf(stderr, "Volume %d correct.\n", current_vol+1);
+    fprintf(stderr, "ERROR: Volume %d correct.\n", current_vol+1);
     return 0;
   }
 
@@ -105,17 +115,17 @@ unsigned int new_bloc() {
   unsigned int new;
 
   if(!is_correct_volume(current_vol)){
-    fprintf(stderr, "Le volume courant est incorrect.\n");
+    fprintf(stderr, "ERROR: Le volume courant est incorrect.\n");
     return 0;
   }
 
   if(!is_init_super(current_super)){
-    fprintf(stderr, "Le super bloc du volume courant n'est pas initialisé.\n");
+    fprintf(stderr, "ERROR: Le super bloc du volume courant n'est pas initialisé.\n");
     return 0;
   }
 
   if(current_super.super_n_free <= 0) {
-    fprintf(stderr, "Plus de place libre sur ce volume.\n");
+    fprintf(stderr, "ERROR: Plus de place libre sur ce volume.\n");
     return 0;
   }
 
@@ -135,7 +145,7 @@ unsigned int new_bloc() {
   }
 
   if(!save_current_super(current_vol)){
-    fprintf(stderr, "Impossible d'enregistrer le super bloc.\n");
+    fprintf(stderr, "ERROR: Impossible d'enregistrer le super bloc.\n");
     return 0;
   }
 
@@ -159,17 +169,17 @@ void free_bloc(const unsigned int bloc) {
   unsigned int trouve = 0;
 
   if(!is_correct_volume(current_vol)){
-    fprintf(stderr, "Le volume courant est incorrect.\n");
+    fprintf(stderr, "ERROR: Le volume courant est incorrect.\n");
     return;
   }
 
   if(!is_init_super(current_super)){
-    fprintf(stderr, "Le super bloc du volume courant n'est pas initialisé.\n");
+    fprintf(stderr, "ERROR: Le super bloc du volume courant n'est pas initialisé.\n");
     return;
   }
 
   if(bloc > mbr.mbr_vol[current_vol].vol_n_sector) {
-    printf("le numero de bloc n'existe pas dans le volume courant\n");
+    printf("ERROR: le numero de bloc n'existe pas dans le volume courant\n");
     return;
   }
 
@@ -212,7 +222,7 @@ void free_bloc(const unsigned int bloc) {
 	 bloc libre */
       current_free_bloc.fb_next = bloc;
     } else {
-      fprintf(stderr, "Le bloc a libérer n'existe pas\n");
+      fprintf(stderr, "ERROR: Le bloc a libérer n'existe pas\n");
       return;
     }
   }

@@ -72,6 +72,7 @@ void irq_enable() {
   irqs_are_enable = 1; 
 }
 
+
 unsigned boot() {
 
   unsigned i;

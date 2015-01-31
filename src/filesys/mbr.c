@@ -68,7 +68,7 @@ int load_mbr() {
 
   /* si le mbr est plus grand que le secteur on ne pourra pas le mettre dedans */
   if(sizeof(struct mbr_s) > HDA_SECTORSIZE) {
-    fprintf(stderr, "Erreur : le secteur size est plus petit que la taille du mbr");
+    fprintf(stderr, "ERROR: le secteur size est plus petit que la taille du mbr");
     return 0;
   }
 
@@ -177,8 +177,8 @@ int make_vol(const unsigned cylinder,
 	     const unsigned nbloc){
 
   if(mbr.mbr_n_vol >= MAX_VOL){
-    fprintf(stderr, "Impossible de creer un nouveau volume.\n");
-    fprintf(stderr, "Le nombre de volume sur le disque est a son maximum.\n");
+    fprintf(stderr, "ERROR: Impossible de creer un nouveau volume.\n");
+    fprintf(stderr, "ERROR: Le nombre de volume sur le disque est a son maximum.\n");
     return 0;
   }
 

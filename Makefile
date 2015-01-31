@@ -75,47 +75,53 @@ all: $(BINPATHS) $(OBJPATHS) $(RESSOURCES) $(LIBRARIES) bin/mmutest
 ### Make binaries
 ###------------------------------------------------------------
 bin/mmutest:\
-	obj/mmu/mi_user.o obj/mmu/mi_kernel.o | $(BINDIR)
+	obj/mmu/mi_user.o obj/mmu/mi_kernel.o \
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/shell:\
 	obj/shell.o obj/filesys/vol.o obj/shell/commande.o\
 	obj/filesys/mbr.o obj/filesys/ifile.o obj/drive/drive.o \
 	obj/filesys/file.o obj/filesys/inode.o \
-	obj/filesys/dir.o obj/filesys/tools.o | $(BINDIR)
+	obj/filesys/dir.o obj/filesys/tools.o \
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mknfs:\
 	obj/mknfs.o obj/filesys/super.o \
-	obj/filesys/mbr.o obj/drive/drive.o | $(BINDIR)
+	obj/filesys/mbr.o obj/drive/drive.o 
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/dfs:\
 	obj/dfs.o obj/filesys/mbr.o \
-	obj/drive/drive.o | $(BINDIR)
+	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mkvol:\
 	obj/mkvol.o obj/filesys/mbr.o \
-	obj/drive/drive.o | $(BINDIR)
+	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/frmt:\
-	obj/frmt.o obj/drive/drive.o | $(BINDIR)
+	obj/frmt.o obj/drive/drive.o \
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/strs:\
-	obj/strs.o obj/drive/drive.o | $(BINDIR)
+	obj/strs.o obj/drive/drive.o \
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/dmps:\
-	obj/dmps.o obj/drive/drive.o | $(BINDIR)
+	obj/dmps.o obj/drive/drive.o \
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/prodcons:\
 	obj/prodcons.o obj/context/sem.o \
-	obj/context/context.o obj/hw/hw.o hw/hardware.h | $(BINDIR)
-	$(CC) $(LDFLAGS) -o $@ $^
+	obj/context/context.o obj/hw/hw.o | $(BINDIR)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin:
 	mkdir -p $(BINDIR)
@@ -156,13 +162,13 @@ obj/context/context.o: 	context/context.c context/context.h
 obj/hw/hw.o: 		hw/hw.c hw/hw.h hw/hardware.h
 
 
-###------------------------------
-### Make object directories
-###------------------------------------------------------------
 obj/%.o: %.c | $(OBJDIRS)
 	$(CC) $(CFLAGS) -I$(INCDIR) -o $@ -c $<
 
 
+###------------------------------
+### Make object directories
+###------------------------------------------------------------
 obj/mmu:
 	mkdir -p $(OBJDIR)
 	mkdir -p $@

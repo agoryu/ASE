@@ -1,8 +1,6 @@
+#include "hw/hw.h"
 #include "filesys/super.h"
 
-static void empty_it(){
-  return;
-}
 
 void usage(char* name){
   printf("Make New FileSystem\n");
@@ -15,7 +13,6 @@ void usage(char* name){
 
 int main(int argc, char* argv[]){
 
-  unsigned int i;
   char* root_name;
 
   if(argc != 1){
@@ -23,21 +20,14 @@ int main(int argc, char* argv[]){
   }
 
   /* init hardware */
-  if(!init_hardware(HW_CONFIG)) {
-    fprintf(stderr, "Initialization error\n");
+  if(!boot()) {
+    fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
     exit(EXIT_FAILURE);
   }
 
-  /* Interreupt handlers */
-  for(i=0; i<NB_EMPTY_FUNCTION; i++)
-    IRQVECTOR[i] = empty_it;
-
-  /* Allows all IT */
-  _mask(1);
-
   /* chargement du mbr */
   if(!load_mbr()){
-    fprintf(stderr, "Erreur lors du chargement du Master Boot Record.\n");
+    fprintf(stderr, "ERROR: Erreur lors du chargement du Master Boot Record.\n");
     exit(EXIT_FAILURE);
   }
 
@@ -45,7 +35,7 @@ int main(int argc, char* argv[]){
   init_super(CURRENT_VOLUME);
 
   if(!load_super(CURRENT_VOLUME)){
-    fprintf(stderr, "Super bloc invalide.\n");
+    fprintf(stderr, "ERROR: Super bloc invalide.\n");
   }
   
   root_name = malloc(sizeof(char) * ENTRYMAXLENGTH);

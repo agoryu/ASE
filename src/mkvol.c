@@ -1,10 +1,6 @@
 #include "hw/hw.h"
 #include "filesys/mbr.h"
 
-static void empty_it(){
-  return;
-}
-
 void usage(char* name){
   printf("Make Volume\n");
   printf("\tPermets la creation d'un volume.\n");

@@ -7,7 +7,7 @@
  */
 int is_valid_cylinder(const unsigned int cylinder){
   if(cylinder>HDA_MAXCYLINDER){
-    fprintf(stderr, "Error: Invalid cylinder\n");
+    fprintf(stderr, "ERROR: Invalid cylinder\n");
     return 0;
   }
   return 1;
@@ -20,7 +20,7 @@ int is_valid_cylinder(const unsigned int cylinder){
  */
 int is_valid_sector(const unsigned int sector){
   if(sector>HDA_MAXSECTOR){
-    fprintf(stderr, "Error: Invalid sector\n");
+    fprintf(stderr, "ERROR: Invalid sector\n");
     return 0;
   }
   return 1;

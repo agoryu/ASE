@@ -1,8 +1,5 @@
 #include "drive/drive.h"
-
-static void empty_it(){
-    return;
-}
+#include "hw/hw.h"
 
 void usage(char* name){
   printf("Dump Sector\n");
@@ -22,7 +19,6 @@ int main(int argc, char* argv[]){
 
   unsigned cylinder, sector;
   unsigned char* buffer = malloc(HDA_SECTORSIZE * sizeof(char));
-  int i;
 
   if(argc!=3 || (argc>1  && strcmp(argv[1], "-h")==0) ){
     usage(argv[0]);
@@ -32,23 +28,15 @@ int main(int argc, char* argv[]){
   sector = atoi(argv[2]);
 
   /* init hardware */
-  if(!init_hardware(HW_CONFIG)){
-    fprintf(stderr, "Error: Initialization error\n");
+  if(!boot()){
+    fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
     exit(EXIT_FAILURE);
   }
-
-  /* Interreupt handlers */
-  for(i=0; i<16; i++){
-    IRQVECTOR[i] = empty_it;
-  }
-
-  /* Allows all IT */
-  _mask(1);
 
   read_sector(cylinder, sector, buffer);
 
   if(!buffer){
-    fprintf(stderr, "Error: Couldn't read hardware\n");
+    fprintf(stderr, "ERROR: Couldn't read hardware\n");
     exit(EXIT_FAILURE);
   } 
 
