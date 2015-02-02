@@ -17,11 +17,15 @@
  * \version 1
  */
 
-typedef void (irq_handler_func_t)(void); 
+
+typedef void (irq_handler_func_t)(void);
 
 #define TIMER_IRQ       2
 #define HDA_CMDREG      0x3F6
 #define TIMER_PARAM     0xF4
+
+/** Nombre de fonction vide a créé */
+#define NB_EMPTY_FUNCTION 16
 
 /** Nom du fichier d'initialisation du materiel */
 #define HW_CONFIG "etc/hardware.ini"

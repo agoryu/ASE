@@ -19,8 +19,10 @@
 /** Numero du volume principale */
 #define MAIN_VOLUME 0
 
-/** Nombre de fonction vide a créé */
-#define NB_EMPTY_FUNCTION 16
+/** Nom du répertoire racine */
+#define ROOTNAME "/"
+
+
 
 /** Le super bloc du dernier volume monté */
 extern struct super_s current_super;

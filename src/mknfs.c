@@ -49,6 +49,7 @@ int main(int argc, char* argv[]){
   if(!has_root()){
     iroot = create_ifile(IT_DIR);
     init_root(iroot);
+    add_entry(iroot, iroot, ROOTNAME);
   } else {
     fprintf(stderr, "WARNING: Le root existe déjà.\n");
     exit(EXIT_SUCCESS);
