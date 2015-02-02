@@ -10,8 +10,8 @@
  * \version 1
  */
 
-/** Magique */
-#define SUPER_MAGIC 0xDEADC0DE
+/** Magique de inode */
+#define INODE_MAGIC 0xCAFEBABE
 
 /** Nombre de bloc directe */
 #define N_DIRECT 2
@@ -40,16 +40,18 @@ enum inode_type_e {
  * \struct inode_s "inode.h"  
  */
 struct inode_s {
+  /** nombre magique */
+  unsigned in_magic;
   /** type d'inode */
   enum inode_type_e in_type;
   /** taille en octet du fichier */
-  unsigned int in_size;
+  unsigned in_size;
   /** bloc direct */
-  unsigned int in_direct[N_DIRECT];
+  unsigned in_direct[N_DIRECT];
   /** bloc indirect composé de bloc direct */
-  unsigned int in_indirect;
+  unsigned in_indirect;
   /** bloc double indirect composé de plusieurs bloc indirecte */
-  unsigned int in_d_indirect;
+  unsigned in_d_indirect;
 };
 
 /**

@@ -1,0 +1,11 @@
+*.o
+*~
+
+doc
+doc/*
+
+bin
+bin/*
+
+vdiskA.bin
+vdiskB.bin

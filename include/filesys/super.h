@@ -31,7 +31,7 @@ extern struct super_s current_super;
  * \struct super_s "super.h"  
  */
 struct super_s {
-  /** numéro magique */
+  /** nombre magique */
   unsigned super_magic;
   /** premier bloc libre dans la liste de bloc */
   unsigned super_first_free;

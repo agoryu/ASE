@@ -19,6 +19,7 @@ unsigned int create_inode(const enum inode_type_e type){
     return 0;
   }
 
+  inode.in_magic = INODE_MAGIC;
   inode.in_type = type;
   inumber = new_bloc();
 
