@@ -96,6 +96,7 @@ void read_bloc_n(const unsigned vol,
 
   calc_secteur_cylindre(vol, nbloc, &secteur, &cylindre);
 
+  
   read_sector_n(cylindre, secteur, buffer, nb_bloc);
 }
 
