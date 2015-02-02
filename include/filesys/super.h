@@ -71,6 +71,12 @@ unsigned has_root();
 unsigned init_root(const unsigned int vol);
 
 /**
+ * Retourne le inumber du doosier racine.
+ * \return inumber du dossier racine.
+ */
+unsigned get_iroot();
+
+/**
  * Monte le volume \a vol comme volume courrant.
  * \param[in] vol Le volume à monter.
  * \return 1 si la fonction c'est bien passé, 0 sinon.

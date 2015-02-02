@@ -1,68 +1,48 @@
 #include "hw/hw.h"
 #include "shell/commande.h"
-#include "filesys/super.h"
 #include "filesys/ifile.h"
-#include "filesys/inode.h"
 
 char* current_path;
 
 int main() {
 
-    char entry[MAX_ENTRY];
-    char* command[MAX_COMMAND];
-    char* root_name;
-    int cpt = 0, num_option = 0, command_length = 0;
-    unsigned inumber_racine;
-    file_desc_t fd;
-    struct inode_s inode;
+  char entry[MAX_ENTRY];
+  char* command[MAX_COMMAND];
+  unsigned cpt = 0, num_option = 0, command_length = 0;
+  file_desc_t fd;
+  struct inode_s inode_root;
 
-    /* init hardware */
-    if(!boot()){
-      exit(EXIT_FAILURE);
-    }
+  /* init hardware */
+  if(!boot()){
+    fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
+    exit(EXIT_FAILURE);
+  }
 
-    /* chargement du mbr */
-    if(!load_mbr()){
-        fprintf(stderr, "Erreur lors du chargement du Master Boot Record.");
-        exit(EXIT_FAILURE);
-    }
+  /* chargement du mbr */
+  if(!load_mbr()){
+    fprintf(stderr, "Erreur lors du chargement du Master Boot Record.");
+    exit(EXIT_FAILURE);
+  }
 
-    if(!mount(MAIN_VOLUME)){
-      fprintf(stderr, "Impossible de monté le disque principal.");
-      exit(EXIT_FAILURE);
-    }
+  if(!mount(MAIN_VOLUME)){
+    fprintf(stderr, "Impossible de monté le disque principal.");
+    exit(EXIT_FAILURE);
+  }
 
-    /* allocation des options de la commande */
-    for(cpt=0; cpt < MAX_COMMAND; cpt++) {
-        command[cpt] = malloc(MAX_OPTION * sizeof(char));
-    }
-    cpt = 0;
+  /* allocation des options de la commande */
+  for(cpt=0; cpt < MAX_COMMAND; cpt++) {
+    command[cpt] = malloc(MAX_OPTION * sizeof(char));
+  }
+  cpt = 0;
 
-    /* allocation du path */
-    current_path = malloc(sizeof(char) * MAX_PATH);
-    *current_path = '/';
+  open_ifile(&fd, get_iroot());
+  read_inode(fd.fds_inumber, &inode_root);
+  if(inode_root.in_type != IT_DIR){
+    fprintf(stderr, "");
+  }
 
-    root_name = malloc(sizeof(char) * ENTRYMAXLENGTH);
-    *root_name = '/';
-
-    /* creation de la racine si elle n'existe pas */
-    /* creation un peu radical qui fait des degat */
-    /*if(inumber_of_path("/") == 0) {
-      inumber_racine = create_ifile(IT_DIR);
-      add_entry(inumber_racine, inumber_racine, root_name);
-    } else {
-      fprintf(stderr, "Racine existante\n");
-    }*/
-
-    inumber_racine = inumber_of_path("/");
+  printf("La racine existe.\n");
     
-    open_ifile(&fd, inumber_racine);
-    read_inode(inumber_racine, &inode);
-    if(inode.in_type == IT_DIR){
-      printf("La racine est un dossier\n");
-    }
-    
-
     /* lancement du shell */
     while(strcmp(entry, "exit\n") != 0) {
 
@@ -106,7 +86,7 @@ int main() {
     
     }
 
-    umount();
+  umount();
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
