@@ -34,6 +34,7 @@ int main(int argc, char* argv[]){
   /* init materiels */
   if(!boot()){
     fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
+    exit(EXIT_FAILURE);
   }
 
   /* chargement du mbr */

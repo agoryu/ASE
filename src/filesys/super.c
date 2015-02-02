@@ -101,6 +101,10 @@ unsigned has_root(){
   return 1;
 }
 
+unsigned get_iroot(){
+  return current_super.super_iroot;
+}
+
 unsigned mount(unsigned vol){
   return load_super(vol);
 }

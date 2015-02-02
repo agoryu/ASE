@@ -80,11 +80,10 @@ bin/mmutest:\
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/shell:\
-	obj/shell.o obj/filesys/vol.o obj/shell/commande.o\
-	obj/filesys/mbr.o obj/filesys/ifile.o obj/drive/drive.o \
-	obj/filesys/file.o obj/filesys/inode.o \
-	obj/filesys/dir.o obj/filesys/tools.o \
-	obj/hw/hw.o | $(BINDIR)
+	obj/shell.o obj/shell/commande.o obj/filesys/tools.o 
+	obj/filesys/file.o obj/filesys/dir.o obj/filesys/ifile.o \
+	obj/filesys/inode.o obj/filesys/super.o obj/filesys/mbr.o \
+	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mknfs:\
