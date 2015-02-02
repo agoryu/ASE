@@ -8,7 +8,7 @@ int main() {
 
   char entry[MAX_ENTRY];
   char* command[MAX_COMMAND];
-  unsigned cpt = 0, num_option = 0, command_length = 0;
+  unsigned cpt = 0, num_option = 0, command_length = 0;f
   file_desc_t fd;
   struct inode_s inode_root;
 
@@ -38,7 +38,7 @@ int main() {
   open_ifile(&fd, get_iroot());
   read_inode(fd.fds_inumber, &inode_root);
   if(inode_root.in_type != IT_DIR){
-    fprintf(stderr, "");
+    fprintf(stderr, "La racine est inexistante.\n");
   }
 
   printf("La racine existe.\n");
