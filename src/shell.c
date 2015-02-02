@@ -47,12 +47,14 @@ int main() {
 
     /* creation de la racine si elle n'existe pas */
     /* creation un peu radical qui fait des degat */
-    if(inumber_of_path("/") == 0) {
+    /*if(inumber_of_path("/") == 0) {
       inumber_racine = create_ifile(IT_DIR);
       add_entry(inumber_racine, inumber_racine, root_name);
     } else {
       fprintf(stderr, "Racine existante\n");
-    }
+    }*/
+
+    inumber_racine = inumber_of_path("/");
     
     open_ifile(&fd, inumber_racine);
     read_inode(inumber_racine, &inode);
