@@ -162,7 +162,7 @@ obj/drive/drive.o:	drive/drive.c drive/drive.h
 obj/context/sem.o: 	context/sem.c context/sem.h
 obj/context/context.o: 	context/context.c context/context.h
 
-obj/hw/hw.o: 		hw/hw.c hw/hw.h hw/hardware.h
+obj/hw/hw.o: 		hw/hw.c hw/hw.h hw/hardware.h context/context.h
 
 
 obj/%.o: %.c | $(OBJDIRS)
