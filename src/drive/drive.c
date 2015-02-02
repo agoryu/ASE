@@ -38,7 +38,7 @@ unsigned is_valid_parameter(const unsigned cylinder, const unsigned sector){
  *
  * Change la position de la tete de lecteur du disque
  */
-int seek_sector(const unsigned int cylinder, const unsigned int sector){
+static unsigned seek_sector(const unsigned int cylinder, const unsigned int sector){
 
   if(!is_valid_cylinder(cylinder)){
     fprintf(stderr, "ERROR: Cylindre invalide.\n");
@@ -83,6 +83,8 @@ void read_sector_n(const unsigned int cylinder,
     return;
   }
 
+  /* TODO prendre verror, si pris yeild */
+
   if( !seek_sector(cylinder, sector) ){
     buffer = NULL;
     return;
@@ -99,6 +101,9 @@ void read_sector_n(const unsigned int cylinder,
   for(i=0; i<HDA_SECTORSIZE && i<n; i++){
     buffer[i] = (unsigned char)MASTERBUFFER[i];
   }
+  
+  /* TODO laché verrou */
+  
 }
 
 
@@ -120,6 +125,8 @@ void write_sector_n(const unsigned int cylinder,
     return;
   }
 
+  /* TODO prendre verror, si pris yeild */
+
   if( !seek_sector(cylinder, sector) ){
     buffer = NULL;
     return;
@@ -137,6 +144,8 @@ void write_sector_n(const unsigned int cylinder,
   _out(HDA_DATAREGS, 1);
   _out(HDA_CMDREG, CMD_WRITE);
   _sleep(HDA_IRQ);
+
+  /* TODO laché verrou */
 }
 
 
@@ -149,6 +158,8 @@ void format_sector(const unsigned int cylinder,
     fprintf(stderr, "ERROR: Tentative de formatage sur cylindre ou secteur invalide.\n");
     return;
   }
+
+  /* TODO prendre verror, si pris yeild */
   
   if( !seek_sector(cylinder, sector) ){
     return;
@@ -163,6 +174,8 @@ void format_sector(const unsigned int cylinder,
 
   _out(HDA_CMDREG, CMD_FORMAT);
   _sleep(HDA_IRQ);
+
+  /* TODO laché verrou */
 
 }
 
