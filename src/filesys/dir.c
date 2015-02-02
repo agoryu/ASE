@@ -15,6 +15,7 @@
 #include "filesys/tools.h"
 #include "filesys/ifile.h"
 #include "filesys/dir.h"
+#include "filesys/super.h"
 
 /*------------------------------
   Private entry manipulation.

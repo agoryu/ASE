@@ -27,7 +27,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    if(!mount(CURRENT_VOLUME)){
+    if(!mount(MAIN_VOLUME)){
       fprintf(stderr, "Impossible de monté le disque principal.");
       exit(EXIT_FAILURE);
     }
