@@ -2,7 +2,7 @@
 #define _VOL_H
 
 /**
- * \file vol.h
+ * \file super.h
  * \brief Gestionnaire de bloc
  * \author Elliot Vanegue et Gaëtan Deflandre
  * \version 1
@@ -16,20 +16,19 @@
 /** Magique utilisé pour Le bloc super */
 #define SUPER_MAGIC 0xDEADC0DE
 
-/** Numero du volume courant */
-#define CURRENT_VOLUME 0
+/** Numero du volume principale */
+#define MAIN_VOLUME 0
 
 /** Nombre de fonction vide a créé */
 #define NB_EMPTY_FUNCTION 16
 
-/** Le volume courrant utile pour les couches supérieurs */
-extern int current_vol;
-
+/** Le super bloc du dernier volume monté */
+extern struct super_s current_super;
 
 /**
  * \brief Représente le premier bloc qui indique 
- *	où se trouve le premier bloc libre
- * \struct super_s "vol.h"  
+ *	  où se trouve le premier bloc libre
+ * \struct super_s "super.h"  
  */
 struct super_s {
   /** numéro magique */
@@ -61,19 +60,25 @@ struct free_bloc_s {
 void init_super(const unsigned vol);
 
 /**
+ * Indique si le répertoire racine existe déjà.
+ * \return 1 si la racine existe déjà sinon 0.
+ */
+unsigned has_root();
+
+/**
  * Initialise le répertoire root pour le volume monté.
  */
 unsigned init_root(const unsigned int vol);
 
 /**
  * Monte le volume \a vol comme volume courrant.
- * \param[in] vol Le volume a monté.
+ * \param[in] vol Le volume à monter.
  * \return 1 si la fonction c'est bien passé, 0 sinon.
  */
 unsigned mount(unsigned vol);
 
 /**
- * Démonte le volume courrant et monte le volume système.
+ * Sauvegarde les changement sur le volume à démonter.
  * \return 1 si la fonction c'est bien passé, 0 sinon.
  */
 unsigned umount();

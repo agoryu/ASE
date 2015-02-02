@@ -1,8 +1,6 @@
-#include "filesys/mbr.h"
+#include "hw/hw.h"
+#include "filesys/super.h"
 
-static void empty_it(){
-    return;
-}
 
 void usage(char* name){
   printf("Display FileSystem\n");
@@ -15,39 +13,31 @@ void usage(char* name){
 
 int main(int argc, char* argv[]){
 
-  unsigned i;
-
   if(argc!=1){
     usage(argv[0]);
   }
 
   /* init hardware */
-  if(!init_hardware(HW_CONFIG)){
-    fprintf(stderr, "Initialization error\n");
-    exit(EXIT_FAILURE);
+  if(!boot()){
+    fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
   }
-
-  /* Interreupt handlers */
-  for(i=0; i<NB_EMPTY_FUNCTION; i++)
-    IRQVECTOR[i] = empty_it;
-
-  /* Allows all IT */
-  _mask(1);
 	
   /* chargement du mbr */
   if(!load_mbr()){
-    fprintf(stderr, "Erreur lors du chargement du Master Boot Record.\n");
+    fprintf(stderr, "WARNING: Disque viège ou corrompu.\n");
+    exit(EXIT_SUCCESS);
+  }
+
+  if(!load_super(MAIN_VOLUME)){
+    fprintf(stderr, "ERROR: Super bloc invalide.\n");
     exit(EXIT_FAILURE);
   }
 
   /* afficher les volumes */
-  load_super(current_vol);  
   if(!display_vol()){
-    exit(EXIT_SUCCESS);
+    exit(EXIT_FAILURE);
   }
 
-
   printf("Il reste %d espace dans le volume courant.\n", get_nb_free_bloc());
-
   exit(EXIT_SUCCESS);
 }

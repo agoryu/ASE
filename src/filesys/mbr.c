@@ -62,10 +62,8 @@ void init_mbr(){
 }
 
 
-int load_mbr() {
+unsigned load_mbr() {
   
-  char reponse_utilisateur;
-
   /* si le mbr est plus grand que le secteur on ne pourra pas le mettre dedans */
   if(sizeof(struct mbr_s) > HDA_SECTORSIZE) {
     fprintf(stderr, "ERROR: le secteur size est plus petit que la taille du mbr");
@@ -77,25 +75,15 @@ int load_mbr() {
 
   /* premiere fois que le disque est utilisé */
   if(mbr.mbr_magic != MBR_MAGIC) {
-
-    printf("Le disque est vierge, voulez-vous continuer les traitements? (y/n) ");
-    reponse_utilisateur = getchar();
-    
-    if(reponse_utilisateur == 'y'){
-      init_mbr();
-    } else {
-      printf("Aucun changement effectue sur le disque.\n");
-      exit(EXIT_SUCCESS);
-    }
+    return 0;
   }
 
   return 1;
 }
 
 
-int save_mbr() {
+void save_mbr() {
   write_sector_n(0, 0, (unsigned char*)&mbr, sizeof(struct mbr_s));
-  return 1;
 }
 
 
@@ -115,7 +103,6 @@ void read_bloc_n(const unsigned vol,
 void read_bloc(const unsigned vol, 
 	       const unsigned nbloc, 
 	       unsigned char* buffer) {
-
   unsigned secteur, cylindre;
 
   calc_secteur_cylindre(vol, nbloc, &secteur, &cylindre);
@@ -172,9 +159,9 @@ void format_vol(const unsigned vol) {
 }
 
 
-int make_vol(const unsigned cylinder, 
-	     const unsigned sector, 
-	     const unsigned nbloc){
+unsigned make_vol(const unsigned cylinder, 
+		  const unsigned sector, 
+		  const unsigned nbloc){
 
   if(mbr.mbr_n_vol >= MAX_VOL){
     fprintf(stderr, "ERROR: Impossible de creer un nouveau volume.\n");
@@ -206,7 +193,7 @@ unsigned display_vol(){
 
   if(mbr.mbr_n_vol == 0){
     printf("Aucun volume sur le disque.\n");
-    return 0;
+    return 1;
   }
   
   nvol = mbr.mbr_n_vol;

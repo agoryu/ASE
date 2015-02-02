@@ -21,13 +21,6 @@
 #include "filesys/inode.h"
 #include "filesys/tools.h"
 
-/* a binary must mount a volume/file system before any other operations.
-   A sole file system mount is allowed.
-   The file system must be umount.
-*/
-
-int mount(unsigned int vol);
-int umount();
 
 /* Despite the user does not need these definitions, our first
    implementation allocates file descriptors in the user space. Thus

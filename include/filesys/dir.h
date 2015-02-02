@@ -19,6 +19,20 @@
 
 #define ENTRYMAXLENGTH 	16
 
+
+/**
+ * \brief An entry. 
+ * A null inumber indicates a free entry.
+ * Export the structure definition on order to be able to read/write
+ * dir. Use at your own risk.
+ * \struct entry_s "dir.h"
+ */
+struct entry_s {
+    unsigned int ent_inumber;
+    char ent_basename[ENTRYMAXLENGTH]; 
+};
+
+
 /* return the inumber of an absolute pathname. 
    0 if not a valid pathname */
 unsigned int inumber_of_path(const char *pathname);
@@ -40,14 +54,7 @@ unsigned int inumber_of_basename(unsigned int idir, const char *basename);
 /* add/del an entry in the directory idir */
 int add_entry(unsigned int idir, unsigned int inumber, const char *basename);
 int del_entry(unsigned int idir, const char *basename);
-
-/* An entry. A null inumber indicates a free entry.
-   Export the structure definition on order to be able to read/write
-   dir. Use at your own risk.*/
-struct entry_s {
-    unsigned int ent_inumber;
-    char ent_basename[ENTRYMAXLENGTH]; 
-}; 
+ 
 
 /* ajouter */
 int get_entry(const char* pathname, char* contain);

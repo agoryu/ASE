@@ -79,14 +79,13 @@ void init_mbr();
  * Charge le Master Boot Record si possible.
  * \return 1 en cas de succès sinon 0
  */
-int load_mbr();
+unsigned load_mbr();
 
 /**
  * Sauvegarde, sur le premier cylindre et premier secteur, le 
  * Master Boot Record.
- * \return 1 en cas de succès sinon 0
  */
-int save_mbr();
+void save_mbr();
 
 /**
  * Lit le bloc \a nbloc du volume \a vol.
@@ -156,9 +155,9 @@ void format_vol(const unsigned vol);
  * \param[in] nbloc Nombre de bloc pour le volume.
  * \return 1 en cas de succes sinon 0.
  */
-int make_vol(const unsigned cylinder, 
-	     const unsigned sector, 
-	     const unsigned nbloc);
+unsigned make_vol(const unsigned cylinder, 
+		  const unsigned sector, 
+		  const unsigned nbloc);
 
 /**
  * Affiche les volumes présents sur le disque, si il y en a.

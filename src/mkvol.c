@@ -1,5 +1,7 @@
 #include "hw/hw.h"
-#include "filesys/mbr.h"
+#include "filesys/super.h"
+
+#define GOOD_SUM 42
 
 void usage(char* name){
   printf("Make Volume\n");
@@ -21,7 +23,13 @@ int main(int argc, char* argv[]){
   unsigned fc = HDA_MAXCYLINDER+1;
   unsigned fs = HDA_MAXSECTOR+1;
   unsigned nb_bloc = 4;
-  int i;
+  unsigned vol, i;
+  char reponse_utilisateur;
+  unsigned check_sum = 0;
+
+  if(argc != 7){
+    usage(argv[0]);
+  }
 
   /* init materiels */
   if(!boot()){
@@ -30,25 +38,44 @@ int main(int argc, char* argv[]){
 
   /* chargement du mbr */
   if(!load_mbr()){
-    fprintf(stderr, "ERROR: lors du chargement du Master Boot Record.");
-    exit(EXIT_FAILURE);
+    printf("Le disque est vierge, voulez-vous continuer les traitements? (y/n) ");
+    reponse_utilisateur = getchar();
+    
+    if(reponse_utilisateur == 'y'){
+      init_mbr();
+    } else {
+      printf("Aucun changement effectue sur le disque.\n");
+      exit(EXIT_SUCCESS);
+    }
   }
 
   /* recuperer les arguments */
   for(i=1; i<argc; i++){
 
+    if((check_sum>=4 && check_sum<10) ||
+       check_sum==20 || check_sum==22 || check_sum==34){
+      break;
+    }
+
     if(strcmp(argv[i], "-s") == 0){
       nb_bloc = atoi(argv[i+1]);
+      check_sum += 10;
     }
 
     if(strcmp(argv[i], "-fc") == 0){
       fc = atoi(argv[i+1]);
-
+      check_sum += 30;
     }
 
     if(strcmp(argv[i], "-fs") == 0){
       fs = atoi(argv[i+1]);
+      check_sum += 2;
     }
+  }
+
+  if(check_sum != GOOD_SUM){
+    fprintf(stderr, "WARNING: Arguments frauduleux !\n");
+    usage(argv[0]);
   }
 
   /* gestion des erreur d'arguments */
@@ -58,12 +85,12 @@ int main(int argc, char* argv[]){
   }
 
   if(fc>HDA_MAXCYLINDER){
-    fprintf(stderr, "ERROR: Cylindre possible.\n");
+    fprintf(stderr, "ERROR: Numéro de cylindre supérieur au nombre de cylindre possible.\n");
     exit(EXIT_FAILURE);
   }
 
   if(fs>HDA_MAXSECTOR){
-    perror("Secteur possible.\n");
+    fprintf(stderr, "ERROR: Numéro de secteur supérieur au nombre de secteur possible.\n");
     exit(EXIT_FAILURE);
   }
 
@@ -78,6 +105,10 @@ int main(int argc, char* argv[]){
     fprintf(stderr, "avec les carateristiques donnees en parametre.\n");
     exit(EXIT_FAILURE);
   }
+
+  vol = mbr.mbr_n_vol-1;
+
+  init_super(vol);
 
   /* sauvegarde de tous les changements effectué sur le mbr */
   save_mbr();

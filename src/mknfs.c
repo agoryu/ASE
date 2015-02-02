@@ -1,22 +1,32 @@
 #include "hw/hw.h"
-#include "filesys/super.h"
+#include "filesys/ifile.h"
+#include "filesys/dir.h"
 
 
 void usage(char* name){
   printf("Make New FileSystem\n");
-  printf("\tInitialaze the current volume\n");
+  printf("\tCreate the file systeme in the chosen device.\n");
+  printf("\tIf no device are chosen, the NFS is created for the main Volume.\n");
   printf("\n");
   printf("Usage:\n");
-  printf("\t$ %s\n", name);
+  printf("\t$ %s [VOLUME_ID]\n", name);
+  printf("\n");
+  printf("Exemple:\n");
+  printf("\t$ %s 0\n", name);
   exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char* argv[]){
 
-  char* root_name;
-
-  if(argc != 1){
-    usage(argv[0]);
+  unsigned iroot;
+  unsigned chosen_vol;
+  
+  if(argc == 1){
+    chosen_vol = MAIN_VOLUME;
+  } else if(argc == 2){
+    chosen_vol = atoi(argv[1]);
+  } else {
+    usage(argv[1]);
   }
 
   /* init hardware */
@@ -27,38 +37,32 @@ int main(int argc, char* argv[]){
 
   /* chargement du mbr */
   if(!load_mbr()){
-    fprintf(stderr, "ERROR: Erreur lors du chargement du Master Boot Record.\n");
+    fprintf(stderr, "WARNING: Disque viège ou corrompu.\n");
+    exit(EXIT_SUCCESS);
+  }
+
+  if(!mount(chosen_vol)){
+    fprintf(stderr, "ERROR: Super bloc invalide.\n");
+    exit(EXIT_FAILURE);
+  }
+  
+  if(!has_root()){
+    iroot = create_ifile(IT_DIR);
+    init_root(iroot);
+  } else {
+    fprintf(stderr, "WARNING: Le root existe déjà.\n");
+    exit(EXIT_SUCCESS);
+  }
+
+  if(!umount()){
+    fprintf(stderr, "ERROR: Problème lors du démontage du disque.\n");
     exit(EXIT_FAILURE);
   }
 
-  /* initialise le super du volume 1 */
-  init_super(CURRENT_VOLUME);
-
-  if(!load_super(CURRENT_VOLUME)){
-    fprintf(stderr, "ERROR: Super bloc invalide.\n");
-  }
-  
-  root_name = malloc(sizeof(char) * ENTRYMAXLENGTH);
-  *root_name = '/';
-
-  /* creation de la racine si elle n'existe pas */
-  /* creation un peu radical qui fait des degat */
-  if(inumber_of_path("/") == 0) {
-    inumber_racine = create_ifile(IT_DIR);
-    add_entry(inumber_racine, inumber_racine, root_name);
-  } else {
-    fprintf(stderr, "Racine existante\n");
-  }
-
-  init_root();
-
-  printf("Le volume principale a été créé avec succès.\n");
+  printf("Le système de fichiers a été créé avec succès.\n");  
 
   /* sauvegarde de tous les changements effectué sur le mbr */
   save_mbr();
-} else {
-  printf("Le volume principale a déjà été créé!\n");
- }
 
-exit(EXIT_SUCCESS);
+  exit(EXIT_SUCCESS);
 }

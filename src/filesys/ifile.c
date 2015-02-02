@@ -251,24 +251,3 @@ int iopen_ifile(file_desc_t *fd, unsigned int inumber, struct inode_s *inode){
     return RETURN_SUCCESS;
 }
 
-int mount(unsigned int vol) {
-
-    /* charge le super du premier volume dans la variable globale */
-    return load_super(vol);
-}
-
-int umount() {
-
-    /*if(current_vol == CURRENT_VOLUME){
-        fprintf(stderr, "Impossible de démonter le volume principal.\n");
-        return RETURN_FAILURE;
-    }*/
-
-    /* initialise le super du premier volume */
-    /*init_super(CURRENT_VOLUME);*/
-
-    /* charge le super du premier volume dans la variable globale */
-    save_current_super();
-
-    return CURRENT_VOLUME;
-}

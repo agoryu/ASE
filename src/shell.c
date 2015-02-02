@@ -1,11 +1,8 @@
+#include "hw/hw.h"
 #include "shell/commande.h"
 #include "filesys/super.h"
 #include "filesys/ifile.h"
 #include "filesys/inode.h"
-
-static void empty_it(){
-    return;
-}
 
 char* current_path;
 
@@ -16,22 +13,13 @@ int main() {
     char* root_name;
     int cpt = 0, num_option = 0, command_length = 0;
     unsigned inumber_racine;
-    unsigned i;
     file_desc_t fd;
     struct inode_s inode;
 
     /* init hardware */
-    if(!init_hardware(HW_CONFIG)){
-        fprintf(stderr, "Error: Initialization error\n");
-        exit(EXIT_FAILURE);
+    if(!boot()){
+      exit(EXIT_FAILURE);
     }
-
-    /* Interreupt handlers */
-    for(i=0; i<16; i++)
-        IRQVECTOR[i] = empty_it;
-
-    /* Allows all IT */
-    _mask(1);
 
     /* chargement du mbr */
     if(!load_mbr()){

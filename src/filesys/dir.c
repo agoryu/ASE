@@ -170,19 +170,26 @@ unsigned int inumber_of_basename(unsigned int idir, const char *basename){
   unsigned int ientry;
   struct entry_s entry;
   int status;
+
+  printf("FUNCTION: inumber_of_basename\n");
+  printf("ARG: idir -> %d\n", idir);
+  printf("ARG: basename -> %s\n", basename);
     
   /* a directory inode? */
   read_inode(idir, &inode);
-  if (inode.in_type != IT_DIR) 
+  if (inode.in_type != IT_DIR){
+    printf("pas dossier\n");
     return 0;
+  }
 
   /* open the dir */
   iopen_ifile(fd, idir, &inode);
 
   /* the entry position in the file */
   status = find_entry(fd, basename);
-  if (status == RETURN_FAILURE) 
+  if (status == RETURN_FAILURE){
     return 0;
+  }
   ientry = status; 
 
   /* seek to the right position */
@@ -200,6 +207,9 @@ unsigned int inumber_of_path(const char *pathname){
 
   unsigned int icurrent; 	/* the inumber of the current dir */
     
+  printf("FUNCTION: inumber_of_path\n");
+  printf("ARG: pathname -> %s\n", pathname);
+
   /* an *absolute* pathname */
   if (*pathname != '/'){
     return 0;
@@ -207,11 +217,11 @@ unsigned int inumber_of_path(const char *pathname){
 
   /* TODO verif les ligne en dessous */
   /* start at root */
-  /*icurrent = super.super_root;*/
-  icurrent = 0;
+  icurrent = current_super.super_iroot;
   /* fin TODO */
     
   while (*pathname) {
+    printf("%c\n", *pathname);
     if (*pathname != '/') {
       char basename[ENTRYMAXLENGTH];
       char *pos;	/* the first / position */
@@ -219,7 +229,11 @@ unsigned int inumber_of_path(const char *pathname){
     	    
       /* length of the leading basename */
       pos = strchr(pathname, '/');
-      lg = pos ? (unsigned)(pos-pathname) : strlen(pathname);
+      lg = pos ? pos-pathname : strlen(pathname);
+
+      printf("pathname: %d %s\n", (unsigned)pathname, pathname);
+      printf("pos: %d %s\n", (unsigned)pos, pos);
+      printf("length: %d\n", lg);
 
       /* copy this leading basename to basename */
       strncpy (basename, pathname, min(ENTRYMAXLENGTH, lg));
@@ -228,8 +242,8 @@ unsigned int inumber_of_path(const char *pathname){
       /* look after this basename in the directory.
 	 this entry inumber is the new current */
       icurrent = inumber_of_basename(icurrent, basename); 
-      if (! icurrent){
-	       return 0;
+      if (!icurrent){
+	return 0;
       }
 
       /* skip the basename in pathname */
@@ -261,8 +275,10 @@ unsigned int dinumber_of_path(const char *pathname, const char **basename){
   *basename = strrchr (pathname, '/');
   (*basename)++;
 
-  /* the dirname stops at the last '/'. ugly isn't it! */
-  *(dirname + ((*basename) - pathname)) = 0;
+  if(((*basename) - pathname) != 1){
+    /* the dirname stops at the last '/'. ugly isn't it! */
+    *(dirname + ((*basename) - pathname)) = 0;
+  }
     
   /* the dirname inumber */
   idirname = inumber_of_path(dirname);
@@ -271,7 +287,7 @@ unsigned int dinumber_of_path(const char *pathname, const char **basename){
     free(dirname);
     return idirname;
   }
-
+  
   /* is dirname a directory? */
   read_inode(idirname, &inode); 
   if (inode.in_type != IT_DIR)

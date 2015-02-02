@@ -44,7 +44,7 @@ vpath %.ini $(ETCDIR)
 
 SUBDIRS  = mmu filesys drive context hw shell
 
-BINARIES = prodcons dmps strs frmt mkvol mknfs dfs shell
+BINARIES = prodcons dmps strs frmt mkvol dfs mknfs shell
 BINPATHS = ${addprefix $(BINDIR)/, $(BINARIES)}
 
 OBJECTS  = ${addsuffix .o, $(BINARIES)}
@@ -88,19 +88,22 @@ bin/shell:\
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mknfs:\
-	obj/mknfs.o obj/filesys/super.o \
-	obj/filesys/mbr.o obj/drive/drive.o 
-	obj/hw/hw.o | $(BINDIR)
+	obj/mknfs.o obj/filesys/tools.o obj/filesys/dir.o \
+	obj/filesys/ifile.o obj/filesys/inode.o \
+	obj/filesys/super.o obj/filesys/mbr.o \
+	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/dfs:\
-	obj/dfs.o obj/filesys/mbr.o \
-	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
+	obj/dfs.o obj/filesys/inode.o obj/filesys/super.o \
+	obj/filesys/mbr.o obj/drive/drive.o \
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mkvol:\
-	obj/mkvol.o obj/filesys/mbr.o \
-	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
+	obj/mkvol.o obj/filesys/inode.o obj/filesys/super.o \
+	obj/filesys/mbr.o obj/drive/drive.o \
+	obj/hw/hw.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/frmt:\

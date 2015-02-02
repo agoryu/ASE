@@ -1,7 +1,8 @@
 #include "filesys/super.h"
+#include "filesys/inode.h"
 
 
-static struct super_s current_super;
+struct super_s current_super;
 
 
 unsigned int is_init_super(const struct super_s super);
@@ -10,7 +11,7 @@ unsigned int is_init_super(const struct super_s super){
   return super.super_magic == SUPER_MAGIC;
 }
 
-unsigned int is_correct_volume(const unsigned int vol){
+unsigned int is_correct_volume(const unsigned vol){
   if(vol > MAX_VOL) {
     fprintf(stderr, 
 	    "ERROR: Numero de volume supérieur au nombre de volumes autorisés sur le disque.\n");
@@ -36,10 +37,10 @@ unsigned int is_correct_volume(const unsigned int vol){
 }
 
 
-void init_super(const unsigned int vol) {
+void init_super(const unsigned vol) {
 
   struct super_s super;
-  unsigned int free_size;
+  unsigned free_size;
 
   if(!is_correct_volume(vol)){
     fprintf(stderr, "ERROR: Impossible d'initialiser un super bloc pour le volume %d.\n", vol+1);
@@ -57,12 +58,13 @@ void init_super(const unsigned int vol) {
   free_size = mbr.mbr_vol[vol].vol_n_sector - 1;
 
   super.super_n_free = free_size;
+  current_vol = vol;
 
   write_bloc_n(vol, SUPER_BLOC, (unsigned char*)&super, sizeof(struct super_s));
 
 }
 
-unsigned load_super(const unsigned int vol) {
+unsigned load_super(const unsigned vol) {
 
   if(!is_correct_volume(vol)){
     fprintf(stderr, "ERROR: Impossible de charger le super bloc du volume %d.\n", vol+1);
@@ -87,14 +89,24 @@ unsigned init_root(const unsigned root_inumber){
 
 }
 
+unsigned has_root(){
+  
+  struct inode_s ind_root;
+
+  read_inode(current_super.super_iroot, &ind_root);
+
+  if(ind_root.in_type != IT_DIR){
+    return 0;
+  }
+  return 1;
+}
+
 unsigned mount(unsigned vol){
-  /* TODO */
-  return 0;
+  return load_super(vol);
 }
 
 unsigned umount(){
-  /* TODO */
-  return 0;
+  return save_current_super();
 }
 
 unsigned save_current_super(){
@@ -109,10 +121,10 @@ unsigned save_current_super(){
 }
 
 
-unsigned int new_bloc() {
+unsigned new_bloc() {
 	
   struct free_bloc_s free_bloc;
-  unsigned int new;
+  unsigned new;
 
   if(!is_correct_volume(current_vol)){
     fprintf(stderr, "ERROR: Le volume courant est incorrect.\n");
