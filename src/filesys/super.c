@@ -95,7 +95,7 @@ unsigned has_root(){
 
   read_inode(current_super.super_iroot, &ind_root);
 
-  if(ind_root.in_type != IT_DIR){
+  if(ind_root.in_magic != INODE_MAGIC){
     return 0;
   }
   return 1;

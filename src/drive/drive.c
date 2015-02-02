@@ -5,9 +5,8 @@
  *
  * Retourne vrai si le cylindre en parametre est correct
  */
-int is_valid_cylinder(const unsigned int cylinder){
+unsigned is_valid_cylinder(const unsigned cylinder){
   if(cylinder>HDA_MAXCYLINDER){
-    fprintf(stderr, "ERROR: Invalid cylinder\n");
     return 0;
   }
   return 1;
@@ -18,12 +17,20 @@ int is_valid_cylinder(const unsigned int cylinder){
  *
  * Retourne vrai si le secteur en parametre est correct
  */
-int is_valid_sector(const unsigned int sector){
+unsigned is_valid_sector(const unsigned sector){
   if(sector>HDA_MAXSECTOR){
-    fprintf(stderr, "ERROR: Invalid sector\n");
     return 0;
   }
   return 1;
+}
+
+
+/* Fonction du fichier drive.c
+ *
+ * Retourne vrai si le cylindre et le secteur en parametre sont corrects.
+ */
+unsigned is_valid_parameter(const unsigned cylinder, const unsigned sector){
+  return is_valid_cylinder(cylinder) && is_valid_sector(sector);
 }
 
 
@@ -33,7 +40,13 @@ int is_valid_sector(const unsigned int sector){
  */
 int seek_sector(const unsigned int cylinder, const unsigned int sector){
 
-  if(!is_valid_cylinder(cylinder) || !is_valid_sector(sector)){
+  if(!is_valid_cylinder(cylinder)){
+    fprintf(stderr, "ERROR: Cylindre invalide.\n");
+    return 0;
+  }
+
+  if(!is_valid_sector(sector)){
+    fprintf(stderr, "ERROR: Secteur invalide.\n");
     return 0;
   }
 
@@ -66,6 +79,9 @@ void read_sector_n(const unsigned int cylinder,
 
   unsigned i;  
 
+  if(!is_valid_parameter(cylinder, sector)){
+    return;
+  }
 
   if( !seek_sector(cylinder, sector) ){
     buffer = NULL;
@@ -100,6 +116,10 @@ void write_sector_n(const unsigned int cylinder,
   
   unsigned i;
 
+  if(!is_valid_parameter(cylinder, sector)){
+    return;
+  }
+
   if( !seek_sector(cylinder, sector) ){
     buffer = NULL;
     return;
@@ -124,6 +144,11 @@ void format_sector(const unsigned int cylinder,
 		   const unsigned int sector, 
 		   const unsigned int nsector, 
 		   const unsigned int value){
+
+  if(!is_valid_parameter(cylinder, sector)){
+    fprintf(stderr, "ERROR: Tentative de formatage sur cylindre ou secteur invalide.\n");
+    return;
+  }
   
   if( !seek_sector(cylinder, sector) ){
     return;
