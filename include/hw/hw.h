@@ -27,7 +27,7 @@ typedef void (irq_handler_func_t)(void);
 #define HW_CONFIG "etc/hardware.ini"
 
 void irq_disable();
-void irq_enable(); 
+void irq_enable();
 
 /**
  * Initialise le matériel. Initialise le disque virtuel, le crée si 

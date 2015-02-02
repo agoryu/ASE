@@ -163,9 +163,3 @@ void yield() {
     switch_to_ctx(ctx_ring);
 }
 
-void start_sched(irq_handler_func_t f) {
-  setup_irq(TIMER_IRQ, f);
-  start_hw();
-  yield();
-}
-
