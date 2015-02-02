@@ -31,7 +31,7 @@ int main()
   }
 
 
-  start_sched(yield);
+  /*start_sched(yield);*/
 
   printf("\nRetour au main\n");
 

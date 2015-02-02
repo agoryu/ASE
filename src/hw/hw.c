@@ -9,9 +9,9 @@
 
 #include <stdio.h>
 
+#include "context/context.h"
 #include "hw/hw.h"
 #include "hw/hardware.h"
-#include "context/context.h"
 
 static void empty_it(){
   return;
@@ -27,7 +27,7 @@ void irq_enable() {
 
 unsigned boot() {
 
-  /*unsigned i;*/
+  unsigned i;
 
   /* init hardware */
   if(!init_hardware(HW_CONFIG)){
@@ -39,10 +39,10 @@ unsigned boot() {
     IRQVECTOR[i] = empty_it;
   }
 
-  IRQVECTOR[TIMER_IRQ] = yield();
+  /*IRQVECTOR[TIMER_IRQ] = yield;*/
 
   /* Allows all IT */
   _mask(1);
-  
+
   return 1;
 }

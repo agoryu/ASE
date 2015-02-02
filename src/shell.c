@@ -94,6 +94,9 @@ int main() {
         }
 
         if(strcmp(entry, "exit\n") != 0) {
+            if(command[0][0] == '&') {
+
+            }
             if(!execute(num_option, command)) {
                 fprintf(stderr, "La commande n'a pas fonctionné.\n");
             } 
