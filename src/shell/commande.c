@@ -117,6 +117,8 @@ int mcat(int argc, char** argv) {
 int mls(int argc, char** argv) {
 
     char* entry = malloc(sizeof(char) * 1024);
+
+    printf("pathname = %s\n", current_path);
     
     if(!get_entry(current_path, entry)) {
         fprintf(stderr, "Erreur lors de la lecture du repertoir.\n");

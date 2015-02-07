@@ -46,9 +46,12 @@ int main() {
 
     unsigned iroot = dinumber_of_path(ROOTNAME, (const char**)&current_path);
 
+    current_path = malloc(MAX_PATH * sizeof(char));
+    current_path[0] = '/';
+
     printf("basename : %s\n", current_path);
     printf("iroot from super: %d\n", get_iroot());
-    printf("iroot from function: %d\n", iroot);
+    printf("iroot from function: %d\n", iroot);     
     
     /* lancement du shell */
     while(strcmp(entry, "exit\n") != 0) {
