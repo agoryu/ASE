@@ -60,10 +60,10 @@ static int find_entry(file_desc_t *fd, const char *basename){
     
     /* look after the right entry */
     while (read_ifile (fd, &entry, sizeof(struct entry_s)) != READ_EOF){
-	if (entry.ent_inumber && ! strcmp(entry.ent_basename, basename)){
-	    return ientry;
-	}
-	ientry++;
+    	if (entry.ent_inumber && ! strcmp(entry.ent_basename, basename)){
+    	    return ientry;
+    	}
+    	ientry++;
     }
 
     /* not found */
@@ -86,8 +86,8 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
     /* a directory inode? */
     read_inode(idir, &inode); 
     if (inode.in_type != IT_DIR) {
-	fprintf(stderr, "Le idir de add_entry n'est pas un dossier\n");
-	return RETURN_FAILURE;
+    	fprintf(stderr, "Erreur : Le idir de add_entry n'est pas un dossier\n");
+    	return RETURN_FAILURE;
     }
     
     /* open the dir */
@@ -111,9 +111,9 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
     close_ifile(fd); /* even in case of write failure */
 
     if (nbyte == sizeof(struct entry_s)){
-	return RETURN_SUCCESS;
+	   return RETURN_SUCCESS;
     } else {
-	return RETURN_FAILURE;
+	   return RETURN_FAILURE;
     }
 }
 
@@ -179,8 +179,7 @@ unsigned int inumber_of_basename(unsigned int idir, const char *basename){
     /* a directory inode? */
     read_inode(idir, &inode);
     if (inode.in_type != IT_DIR){
-	printf("pas dossier\n");
-	return 0;
+    	return 0;
     }
 
     /* open the dir */
@@ -189,7 +188,8 @@ unsigned int inumber_of_basename(unsigned int idir, const char *basename){
     /* the entry position in the file */
     status = find_entry(fd, basename);
     if (status == RETURN_FAILURE){
-	return 0;
+        /*fprintf(stderr, "Erreur : l'entrée %s n'a pas été trouvé dans inumber_of_basename\n", basename);*/
+	    return 0;
     }
     ientry = status; 
 
@@ -213,7 +213,8 @@ unsigned int inumber_of_path(const char *pathname){
 
     /* an *absolute* pathname */
     if (*pathname != '/'){
-	return 0;
+        fprintf(stderr, "Erreur : le chemin ne commence pas à la racine dans inumber_of_path.\n");
+	    return 0;
     }
 
     /* TODO verif les ligne en dessous */
@@ -222,38 +223,38 @@ unsigned int inumber_of_path(const char *pathname){
     /* fin TODO */
     
     while (*pathname) {
-	printf("%c\n", *pathname);
-	if (*pathname != '/') {
-	    char basename[ENTRYMAXLENGTH];
-	    char *pos;	/* the first / position */
-	    unsigned lg;     	/* the length of the first basename */
-    	    
-	    /* length of the leading basename */
-	    pos = strchr(pathname, '/');
-	    lg = pos ? pos-pathname : strlen(pathname);
+    	printf("%c\n", *pathname);
+    	if (*pathname != '/') {
+    	    char basename[ENTRYMAXLENGTH];
+    	    char *pos;	/* the first / position */
+    	    unsigned lg;     	/* the length of the first basename */
+        	    
+    	    /* length of the leading basename */
+    	    pos = strchr(pathname, '/');
+    	    lg = pos ? pos-pathname : strlen(pathname);
 
-	    printf("pathname: %d %s\n", (unsigned)pathname, pathname);
-	    printf("pos: %d %s\n", (unsigned)pos, pos);
-	    printf("length: %d\n", lg);
+    	    printf("pathname: %d %s\n", (unsigned)pathname, pathname);
+    	    printf("pos: %d %s\n", (unsigned)pos, pos);
+    	    printf("length: %d\n", lg);
 
-	    /* copy this leading basename to basename */
-	    strncpy (basename, pathname, min(ENTRYMAXLENGTH, lg));
-	    basename[min(ENTRYMAXLENGTH, lg)] = 0;
+    	    /* copy this leading basename to basename */
+    	    strncpy (basename, pathname, min(ENTRYMAXLENGTH, lg));
+    	    basename[min(ENTRYMAXLENGTH, lg)] = 0;
 
-	    /* look after this basename in the directory.
-	       this entry inumber is the new current */
-	    icurrent = inumber_of_basename(icurrent, basename); 
-	    if (!icurrent){
-		return 0;
-	    }
+    	    /* look after this basename in the directory.
+    	       this entry inumber is the new current */
+    	    icurrent = inumber_of_basename(icurrent, basename); 
+    	    if (!icurrent){
+    		    return 0;
+    	    }
 
-	    /* skip the basename in pathname */
-	    pathname += lg;
+    	    /* skip the basename in pathname */
+    	    pathname += lg;
 
-	    /* may end here */ 
-	    if (! *pathname) break;
-	}
-	pathname++ ;
+    	    /* may end here */ 
+    	    if (! *pathname) break;
+    	}
+    	pathname++ ;
     }
     return icurrent ;
 }
@@ -266,38 +267,46 @@ unsigned dinumber_of_path(const char *pathname, const char **basename){
 
     /* an *absolute* pathname */
     if (*pathname != '/') {
-	/* free dirname strdup() */
-	free(dirname);
-	return idirname;
+    	/* free dirname strdup() */
+        fprintf(stderr, "Erreur : le chemin ne commence pas à la racine dans dinumber_of_path.\n");
+    	free(dirname);
+    	return idirname;
     }
 
     /* the last basename (there is at least a '/') */
     *basename = strrchr (pathname, '/');
     
-    if(strcmp(pathname, ROOTNAME) == 0){
-	/* if pathname isn't root, we want the basename without any '/' */
-	(*basename)++;
+    /*if(strcmp(pathname, ROOTNAME) == 0){*/
+    if(*pathname == '/') {
+    	/* if pathname isn't root, we want the basename without any '/' */
+    	(*basename)++;
     } 
 
     /* TODO gére le nom de la racine càd '/' */
 
     if(((*basename) - pathname) != 1){
-	/* the dirname stops at the last '/'. ugly isn't it! */
-	*(dirname + ((*basename) - pathname)) = 0;
+    	/* the dirname stops at the last '/'. ugly isn't it! */
+    	*(dirname + ((*basename) - pathname)) = 0;
     }
-    
-    /* the dirname inumber */
+
+    printf("dirname = %s\n", dirname);
+
+     /* the dirname inumber */
     idirname = inumber_of_path(dirname);
     if (! idirname) {
-	/* free dirname strdup() */
-	free(dirname);
-	return idirname;
+    	/* free dirname strdup() */
+        fprintf(stderr, "Erreur : le chemin n'a pas de inumber dans dinumber_of_path.\n");
+    	free(dirname);
+    	return idirname;
     }
   
     /* is dirname a directory? */
     read_inode(idirname, &inode); 
-    if (inode.in_type != IT_DIR)
-	idirname = 0; 
+    if (inode.in_type != IT_DIR) {
+        fprintf(stderr, "Erreur : le chemin n'est pas un dossier dans dinumber_of_path.\n");
+        idirname = 0; 
+    }
+	   
 
     /* free dirname strdup() */
     free(dirname); 
@@ -311,14 +320,15 @@ int get_entry(const char* pathname, char* contain) {
     file_desc_t _fd, *fd = &_fd;
     struct entry_s entry; 
     unsigned int idir =  inumber_of_path(pathname);
+
+    printf("idir = %d\n", idir);
     
     /* recuperation inode */
     read_inode(idir, &inode); 
     if (inode.in_type != IT_DIR)  {
-	fprintf(stderr, "Le premier parametre de get_entry n'est pas un dossier\n");
-	return 0;
+    	fprintf(stderr, "Erreur : Le premier parametre de get_entry n'est pas un dossier\n");
+    	return 0;
     }
-    
     
     /* open the dir */
     iopen_ifile(fd, idir, &inode);
@@ -327,9 +337,9 @@ int get_entry(const char* pathname, char* contain) {
     close_ifile(fd); /* even in case of write failure */
 
     if(read_ifile (fd, &entry, sizeof(struct entry_s)) != 0) {
-	printf("basename = %s\n", entry.ent_basename);
-	strcpy(contain, entry.ent_basename);
-	return 1;
+    	printf("basename = %s\n", entry.ent_basename);
+    	strcpy(contain, entry.ent_basename);
+    	return 1;
     }
 
     return 0;

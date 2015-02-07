@@ -66,7 +66,7 @@ unsigned load_mbr() {
   
   /* si le mbr est plus grand que le secteur on ne pourra pas le mettre dedans */
   if(sizeof(struct mbr_s) > HDA_SECTORSIZE) {
-    fprintf(stderr, "ERROR: le secteur size est plus petit que la taille du mbr");
+    fprintf(stderr, "ERROR: le secteur size est plus petit que la taille du mbr\n");
     return 0;
   }
 

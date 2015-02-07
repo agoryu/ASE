@@ -14,32 +14,32 @@ int main() {
 
     /* init hardware */
     if(!boot()){
-	fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
-	exit(EXIT_FAILURE);
+    	fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
+    	exit(EXIT_FAILURE);
     }
 
     /* chargement du mbr */
     if(!load_mbr()){
-	fprintf(stderr, "Erreur lors du chargement du Master Boot Record.");
-	exit(EXIT_FAILURE);
+    	fprintf(stderr, "Erreur lors du chargement du Master Boot Record.\n");
+    	exit(EXIT_FAILURE);
     }
 
     if(!mount(MAIN_VOLUME)){
-	fprintf(stderr, "Impossible de monté le disque principal.");
-	exit(EXIT_FAILURE);
+    	fprintf(stderr, "Impossible de monté le disque principal.\n");
+    	exit(EXIT_FAILURE);
     }
 
     /* allocation des options de la commande */
     for(cpt=0; cpt < MAX_COMMAND; cpt++) {
-	command[cpt] = malloc(MAX_OPTION * sizeof(char));
+	   command[cpt] = malloc(MAX_OPTION * sizeof(char));
     }
     cpt = 0;
 
     open_ifile(&fd, get_iroot());
     read_inode(fd.fds_inumber, &inode_root);
     if(inode_root.in_type != IT_DIR){
-	fprintf(stderr, "La racine est inexistante.\n");
-	exit(EXIT_FAILURE);
+    	fprintf(stderr, "La racine est inexistante.\n");
+    	exit(EXIT_FAILURE);
     }
 
     printf("La racine existe.\n");

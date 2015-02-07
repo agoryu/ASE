@@ -219,8 +219,10 @@ int write_ifile(file_desc_t *fd, const void *buf, unsigned int nbyte){
 
     /* write one by one */
     for (i = 0; i < nbyte; i++) {
-        if (writec_ifile(fd, *((char *)buf+i)) == RETURN_FAILURE)
+        if (writec_ifile(fd, *((char *)buf+i)) == RETURN_FAILURE) {
+            fprintf(stderr, "Erreur : probleme au niveau du byte %d\n", i);
             return RETURN_FAILURE;
+        }
     }
 
     return nbyte;

@@ -24,14 +24,14 @@ create_file(const char *pathname, file_type_t type)
     /* does the directory exist? */
     idir = dinumber_of_path(pathname, &basename); 
     if (! idir) {
-      fprintf(stderr, "Le dossier n'existe pas dans create file.\n");
+      fprintf(stderr, "Erreur : Le dossier n'existe pas dans create file.\n");
 	   return RETURN_FAILURE;
    }
 
     /* create the file */
     inumber = create_ifile(type);
     if (! inumber) {
-      fprintf(stderr, "La creation du fichier a échoué\n");
+      fprintf(stderr, "Erreur : La creation du fichier a échoué\n");
 	   return RETURN_FAILURE;
    }
 
@@ -51,7 +51,7 @@ delete_file(const char *pathname)
     /* does the directory exist? */
     idir = dinumber_of_path(pathname, &basename); 
     if (! idir)
-	return RETURN_FAILURE;
+	     return RETURN_FAILURE;
 
     /* suppress the entry in the directory */
     status = del_entry(idir, basename); 
@@ -72,7 +72,7 @@ open_file(file_desc_t *fd, const char *pathname)
     /* convert the pathname into an inumber */  
     inumber = inumber_of_path(pathname);
     if (! inumber)
-	return RETURN_FAILURE; 
+	     return RETURN_FAILURE; 
 
     /* and open teh file */ 
     status = open_ifile(fd, inumber);
