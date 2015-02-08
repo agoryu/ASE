@@ -87,11 +87,11 @@ int main() {
             if(command[0][0] == '&') {
 
             }
-            if(!execute(num_option, command)) {
-                fprintf(stderr, "La commande n'a pas fonctionné.\n");
+            if(execute(num_option, command) == RETURN_FAILURE) {
+                fprintf(stderr, "Erreur : La commande n'a pas fonctionné.\n");
             } 
         } else {
-            printf("en revoir HAL\n");
+            printf("au revoir HAL\n");
         }
     
     }

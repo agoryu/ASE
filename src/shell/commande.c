@@ -19,10 +19,51 @@ int execute(int argc, char** argv) {
     } else if(strcmp(argv[0], "ls") == 0) {
         return mls(argc, argv);
 
+    } else if(strcmp(argv[0], "vim") == 0) {
+        return mvim(argc, argv);
+
     } else {
         printf("Commande non reconnu\n");
         return 0;
     }
+}
+
+int mvim(int argc, char** argv) {
+
+    file_desc_t *fd = NULL;
+    char* pathname = malloc(MAX_PATH * sizeof(char));
+    unsigned i, j;
+    unsigned size;
+
+     if(argc < 1) {
+        return RETURN_FAILURE;
+    }    
+
+    if(*pathname != '/') {
+        if(strcmp(current_path, "/") == 0) {
+            sprintf(pathname, "/%s", argv[1]);
+        } else {
+            sprintf(pathname, "%s/%s", current_path, argv[1]);
+        }
+    }
+
+    /* TODO fair une verif si le pathname n'est pas un dossier */
+    if(open_file(fd, pathname) == RETURN_FAILURE) {
+        create_file(pathname, IT_FILE);
+        open_file(fd, pathname);
+    }
+
+    for(i=2; i<argc; i++) {
+        size = strlen(argv[i]);
+        for(j=0; j<size; j++) {
+            writec_file(fd, argv[i][j]);
+        }
+        writec_file(fd, ' ');
+    }
+
+    close_file(fd);
+
+    return RETURN_SUCCESS;
 }
 
 int mcd(int argc, char** argv) {

@@ -158,8 +158,9 @@ int writec_ifile(file_desc_t *fd, char c){
     /* first write in the bloc ? ensure the data bloc allocation */
     if (! fd->fds_dirty) {
         ibloc = vbloc_of_fbloc(fd->fds_inumber, bloc_of_pos(fd->fds_pos), TRUE);
-        if (! ibloc)
+        if (! ibloc) {
             return RETURN_FAILURE;
+        }
         fd->fds_dirty = TRUE;
     }
     
@@ -171,10 +172,11 @@ int writec_ifile(file_desc_t *fd, char c){
         /* read the new buffer */
         ibloc = vbloc_of_fbloc(fd->fds_inumber,
                                bloc_of_pos(fd->fds_pos+1), FALSE);
-        if (! ibloc)
+        if (! ibloc) {
             memset(fd->fds_buf, 0, BLOC_SIZE);
-        else
+        } else {
             read_bloc(current_vol, ibloc, fd->fds_buf);
+        }
         fd->fds_dirty = FALSE;
     }
     

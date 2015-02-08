@@ -81,7 +81,12 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
     unsigned int ientry = 0;
     int nbyte; 
     /* TODO confirmation de la suppression */
-    /* int status; */
+    int status;
+
+    printf("FUNCTION: add_entry\n");
+    printf("ARG: idir -> %d\n", idir);
+    printf("ARG: inumber -> %d\n", inumber);
+    printf("ARG: basename -> %s\n", basename);
     
     /* a directory inode? */
     read_inode(idir, &inode); 
@@ -91,7 +96,7 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
     }
     
     /* open the dir */
-    iopen_ifile(fd, idir, &inode);
+    status = iopen_ifile(fd, idir, &inode);
 
     /* the new entry position in the file */
     ientry = new_entry(fd);
@@ -179,6 +184,7 @@ unsigned int inumber_of_basename(unsigned int idir, const char *basename){
     /* a directory inode? */
     read_inode(idir, &inode);
     if (inode.in_type != IT_DIR){
+        fprintf(stderr, "Erreur : le chemin dont le inumber est %d n'est pas un repertoir\n", idir);
     	return 0;
     }
 
@@ -188,7 +194,7 @@ unsigned int inumber_of_basename(unsigned int idir, const char *basename){
     /* the entry position in the file */
     status = find_entry(fd, basename);
     if (status == RETURN_FAILURE){
-        /*fprintf(stderr, "Erreur : l'entrée %s n'a pas été trouvé dans inumber_of_basename\n", basename);*/
+        fprintf(stderr, "Erreur : l'entrée %s n'a pas été trouvé\n", basename);
 	    return 0;
     }
     ientry = status; 
@@ -284,12 +290,11 @@ unsigned dinumber_of_path(const char *pathname, const char **basename){
 
     /* TODO gére le nom de la racine càd '/' */
 
-    if(((*basename) - pathname) != 1){
+    /* la valeur initial était 1 a la place du 0 */
+    if(((*basename) - pathname) != 0){
     	/* the dirname stops at the last '/'. ugly isn't it! */
     	*(dirname + ((*basename) - pathname)) = 0;
     }
-
-    printf("dirname = %s\n", dirname);
 
      /* the dirname inumber */
     idirname = inumber_of_path(dirname);
@@ -320,8 +325,6 @@ int get_entry(const char* pathname, char* contain) {
     file_desc_t _fd, *fd = &_fd;
     struct entry_s entry; 
     unsigned int idir =  inumber_of_path(pathname);
-
-    printf("idir = %d\n", idir);
     
     /* recuperation inode */
     read_inode(idir, &inode); 

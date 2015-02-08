@@ -42,6 +42,7 @@ int mcd(int argc, char** argv);
 int mmkdir(int argc, char** argv);
 int mcat(int argc, char** argv);
 int mls(int argc, char** argv);
+int mvim(int argc, char** argv);
 
 #endif
 
