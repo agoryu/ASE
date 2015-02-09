@@ -9,8 +9,6 @@ int main() {
     char entry[MAX_ENTRY];
     char* command[MAX_COMMAND];
     unsigned cpt = 0, num_option = 0, command_length = 0;
-    file_desc_t fd;
-    struct inode_s inode_root;
 
     /* init hardware */
     if(!boot()){
@@ -20,39 +18,23 @@ int main() {
 
     /* chargement du mbr */
     if(!load_mbr()){
-    	fprintf(stderr, "Erreur lors du chargement du Master Boot Record.\n");
+    	fprintf(stderr, "FATAL: Erreur lors du chargement du Master Boot Record.\n");
     	exit(EXIT_FAILURE);
     }
 
     if(!mount(MAIN_VOLUME)){
-    	fprintf(stderr, "Impossible de monté le disque principal.\n");
+    	fprintf(stderr, "FATAL: Impossible de monté le disque principal.\n");
     	exit(EXIT_FAILURE);
     }
 
     /* allocation des options de la commande */
     for(cpt=0; cpt < MAX_COMMAND; cpt++) {
-	   command[cpt] = malloc(MAX_OPTION * sizeof(char));
+	command[cpt] = malloc(MAX_OPTION * sizeof(char));
     }
     cpt = 0;
 
-    open_ifile(&fd, get_iroot());
-    read_inode(fd.fds_inumber, &inode_root);
-    if(inode_root.in_type != IT_DIR){
-    	fprintf(stderr, "La racine est inexistante.\n");
-    	exit(EXIT_FAILURE);
-    }
-
-    printf("La racine existe.\n");
-
-    /* oua sa passe sa a la compil */
-    unsigned iroot = dinumber_of_path(ROOTNAME, (const char**)&current_path);
-
     current_path = malloc(MAX_PATH * sizeof(char));
-    current_path[0] = '/';
-
-    printf("basename : %s\n", current_path);
-    printf("iroot from super: %d\n", get_iroot());
-    printf("iroot from function: %d\n", iroot);     
+    current_path[0] = *ROOTNAME;
     
     /* lancement du shell */
     while(strcmp(entry, "exit\n") != 0) {
@@ -66,9 +48,9 @@ int main() {
         num_option = 0;
         command_length = 0;
 
-        printf("prompt %s> ", current_path);
+        printf("prompt %s$ ", current_path);
         if(fgets(entry, MAX_ENTRY, stdin) == NULL) {
-            fprintf(stderr, "Une erreur est survenu lors de l'entré de votre commande\n");
+            fprintf(stderr, "ERROR: Une erreur est survenu lors de l'entré de votre commande\n");
             continue;
         }
 
@@ -89,7 +71,7 @@ int main() {
 
             }
             if(execute(num_option, command) == RETURN_FAILURE) {
-                fprintf(stderr, "Erreur : La commande n'a pas fonctionné.\n");
+                fprintf(stderr, "ERROR: La commande n'a pas fonctionné.\n");
             } 
         } else {
             printf("au revoir HAL\n");

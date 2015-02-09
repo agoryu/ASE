@@ -103,7 +103,7 @@ int mmkdir(int argc, char** argv) {
     char* dir_path;
 
     if(argc < 1) {
-        fprintf(stderr, "Erreur : il manque le nom du dossier à créer\n");
+        fprintf(stderr, "ERROR: il manque le nom du dossier à créer\n");
         return 0;
     }
 
@@ -162,7 +162,7 @@ int mls(int argc, char** argv) {
     printf("pathname = %s\n", current_path);
     
     if(!get_entry(current_path, entry)) {
-        fprintf(stderr, "Erreur lors de la lecture du repertoir.\n");
+        fprintf(stderr, "ERROR: Erreur lors de la lecture du repertoir.\n");
         return 0;
     } 
 

@@ -329,7 +329,7 @@ int get_entry(const char* pathname, char* contain) {
     /* recuperation inode */
     read_inode(idir, &inode); 
     if (inode.in_type != IT_DIR)  {
-    	fprintf(stderr, "Erreur : Le premier parametre de get_entry n'est pas un dossier\n");
+    	fprintf(stderr, "ERROR: Le premier parametre de get_entry n'est pas un dossier\n");
     	return 0;
     }
     

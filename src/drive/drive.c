@@ -84,6 +84,7 @@ void read_sector_n(const unsigned int cylinder,
   }
 
   /* TODO prendre verror, si pris yeild */
+  printf("read %d %d\n", cylinder, sector);
 
   if( !seek_sector(cylinder, sector) ){
     buffer = NULL;
@@ -126,6 +127,7 @@ void write_sector_n(const unsigned int cylinder,
   }
 
   /* TODO prendre verror, si pris yeild */
+  printf("write %d %d\n", cylinder, sector);
 
   if( !seek_sector(cylinder, sector) ){
     buffer = NULL;

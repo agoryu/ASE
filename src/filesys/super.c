@@ -160,7 +160,7 @@ unsigned new_bloc() {
     write_bloc_n(current_vol, current_super.super_first_free, (unsigned char*)&free_bloc, sizeof(struct free_bloc_s));
   }
 
-  if(!save_current_super(current_vol)){
+  if(!save_current_super()){
     fprintf(stderr, "ERROR: Impossible d'enregistrer le super bloc.\n");
     return 0;
   }
