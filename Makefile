@@ -44,7 +44,7 @@ vpath %.ini $(ETCDIR)
 
 SUBDIRS  = mmu filesys drive context hw shell
 
-BINARIES = prodcons dmps strs frmt mkvol dfs mknfs shell
+BINARIES = prodcons dmps strs frmt mkvol dfs mknfs shell testCore
 BINPATHS = ${addprefix $(BINDIR)/, $(BINARIES)}
 
 OBJECTS  = ${addsuffix .o, $(BINARIES)}
@@ -58,7 +58,7 @@ OBJECTS += ${addprefix shell/, ${addsuffix .o, commande}}
 OBJPATHS = ${addprefix $(OBJDIR)/, $(OBJECTS)}
 OBJDIRS  = ${addprefix $(OBJDIR)/, $(SUBDIRS)}
 
-RESSOURCES = hardware.ini
+RESSOURCES = hardware.ini core.ini
 
 LIBRARIES = lib/libhardware.a
 
@@ -74,6 +74,10 @@ all: $(BINPATHS) $(OBJPATHS) $(RESSOURCES) $(LIBRARIES) bin/mmutest
 ###------------------------------
 ### Make binaries
 ###------------------------------------------------------------
+bin/testCore:\
+	obj/testCore.o
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
+
 bin/mmutest:\
 	obj/mmu/mi_user.o obj/mmu/mi_kernel.o \
 	obj/hw/hw.o | $(BINDIR)
@@ -132,6 +136,7 @@ bin:
 ###------------------------------
 ### Compile source
 ###------------------------------------------------------------
+obj/testCore.o:		testCore.c
 obj/shell.o:		shell.c shell/commande.h
 obj/writefile.o:	writefile.c filesys/inode.h filesys/ifile.h filesys/tools.h
 obj/readfile.o:		readfile.c filesys/inode.h filesys/ifile.h filesys/tools.h
