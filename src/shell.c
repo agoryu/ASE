@@ -70,7 +70,7 @@ int main() {
             if(command[0][0] == '&') {
 
             }
-            if(execute(num_option, command) == RETURN_FAILURE) {
+            if(execute(num_option, command) == RETURN_FAILURE){
                 fprintf(stderr, "ERROR: La commande n'a pas fonctionné.\n");
             } 
         } else {

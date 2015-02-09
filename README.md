@@ -1,10 +1,32 @@
-OS
-==
+ASE++
+=====
 
-bug bizarre au niveau de la fonction write_sector ou write_sector_n
- - peut-être:
-   - erreur avec le mbr en extern et la compilation (mais semble bizarre)
-   - erreur avec la lib .a je sais pas
- 
-et complant de deux manière différente et avec ou sans tous les flags 
-imaginables le bug est toujours la, alors que dans tp8 les n'y est pas.
+
+## Auteur
+
+ - VANEGUE Elliot
+ - DEFLANDRE Gaëtan
+
+
+## Lancement
+
+    $ make
+	$ ./bin/mkvol -s 32767 -fc 0 -fs 1
+	$ ./bin/mknfs
+	$ ./bin/shell
+
+
+## Avancement
+
+La création du système de fichiers avec mknfs semble fonctonner correctement.
+Le shell fonctionne et lance les commandes avec des arguments.
+Les commandes ne fonctionnent pas toutes correctement, la commande mkdir
+pause problème, on ne retrouve plus le mbr après son utilisation.
+
+
+## Commandes implémentées
+
+ - ls
+ - cat [filename]
+ - cd [dirname]
+ - mkdir [dirname]

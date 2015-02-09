@@ -99,7 +99,8 @@ int mcd(int argc, char** argv) {
 
 int mmkdir(int argc, char** argv) {
 
-    unsigned int status = 0;
+    unsigned status = 0;
+    unsigned inumber;
     char* dir_path;
 
     if(argc < 1) {
@@ -120,9 +121,21 @@ int mmkdir(int argc, char** argv) {
         sprintf(dir_path, "%s/%s", dir_path, argv[1]);
     }
         
-    status = create_file(dir_path, IT_DIR);
+    inumber = create_ifile(IT_DIR);
+    if(inumber == RETURN_FAILURE){
+	fprintf(stderr, "ERROR: échec creation de dossier avec mkdir\n");
+	return RETURN_FAILURE;
+    }
 
-    return status;
+    status = add_entry(get_iroot(), inumber, argv[1]);
+    if(status == RETURN_FAILURE){
+	fprintf(stderr, "ERROR: échec ajout du dossier dans la racine\n");
+	return RETURN_FAILURE;
+    }
+
+    save_current_super();
+    
+    return RETURN_SUCCESS;
 }
 
 int mcat(int argc, char** argv) {

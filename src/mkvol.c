@@ -14,7 +14,7 @@ void usage(char* name){
   printf("\t $ %s -s NB_BLOC -fc CYLINDRE -fs SECTOR\n", name);
   printf("\n");
   printf("Exemple:\n");
-  printf("\t$ %s -fc 0 -fs 1 -s 12\n", name);
+  printf("\t$ %s -fc 0 -fs 1 -s 32767\n", name);
   exit(EXIT_SUCCESS);
 }
 
