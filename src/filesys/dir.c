@@ -81,7 +81,7 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
     unsigned int ientry = 0;
     int nbyte; 
     /* TODO confirmation de la suppression */
-    int status;
+    /*int status;*/
 
     printf("FUNCTION: add_entry\n");
     printf("ARG: idir -> %d\n", idir);
@@ -96,7 +96,7 @@ int add_entry(unsigned int idir, unsigned int inumber, const char *basename){
     }
     
     /* open the dir */
-    status = iopen_ifile(fd, idir, &inode);
+    /*status =*/ iopen_ifile(fd, idir, &inode);
 
     /* the new entry position in the file */
     ientry = new_entry(fd);

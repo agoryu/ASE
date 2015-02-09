@@ -44,6 +44,7 @@ int main() {
 
     printf("La racine existe.\n");
 
+    /* oua sa passe sa a la compil */
     unsigned iroot = dinumber_of_path(ROOTNAME, (const char**)&current_path);
 
     current_path = malloc(MAX_PATH * sizeof(char));
