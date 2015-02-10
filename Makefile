@@ -62,7 +62,7 @@ RESSOURCES = hardware.ini core.ini
 
 LIBRARIES = lib/libhardware.a
 
-LIBFLAGS = -L$(LIBDIR) -lhardware
+LIBFLAGS = -L$(LIBDIR) -lhardware -lpthread
 
 
 ###------------------------------
