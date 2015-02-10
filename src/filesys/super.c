@@ -58,6 +58,7 @@ void init_super(const unsigned vol) {
   free_size = mbr.mbr_vol[vol].vol_n_sector - 1;
 
   super.super_n_free = free_size;
+  super.super_iroot = 0;
   current_vol = vol;
 
   write_bloc_n(vol, SUPER_BLOC, (unsigned char*)&super, sizeof(struct super_s));
@@ -84,6 +85,11 @@ unsigned init_root(const unsigned root_inumber){
     return 0;
   }
 
+  if(root_inumber == 0) {
+    fprintf(stderr, "ERROR: mauvaise valeur passé dans init_root.\n");
+    return 0;
+  }
+
   current_super.super_iroot = root_inumber;
   return 1;
 
@@ -91,14 +97,15 @@ unsigned init_root(const unsigned root_inumber){
 
 unsigned has_root(){
   
-  struct inode_s ind_root;
+  /*struct inode_s ind_root;
 
   read_inode(current_super.super_iroot, &ind_root);
 
   if(ind_root.in_magic != INODE_MAGIC){
     return 0;
   }
-  return 1;
+  return 1;*/
+  return !(current_super.super_iroot == 0);
 }
 
 unsigned get_iroot(){
@@ -164,7 +171,7 @@ unsigned new_bloc() {
     fprintf(stderr, "ERROR: Impossible d'enregistrer le super bloc.\n");
     return 0;
   }
-
+  
   return new;
 }
 
