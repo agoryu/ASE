@@ -1,4 +1,5 @@
 #include "hw/hw.h"
+
 #include "shell/commande.h"
 #include "filesys/ifile.h"
 
@@ -67,8 +68,10 @@ int main() {
         }
 
         if(strcmp(entry, "exit\n") != 0) {
-            if(command[0][0] == '&') {
+	    printf("%d\n", num_option);
 
+            if(command[0][0] == '&') {
+		printf("not yet\n");
             }
             if(execute(num_option, command) == RETURN_FAILURE){
                 fprintf(stderr, "ERROR: La commande n'a pas fonctionné.\n");

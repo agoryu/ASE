@@ -8,7 +8,7 @@
  * \param[in] arg arguement de la fonctione lancé par le contexte
  * \return 0 en cas d'erreur et 1 sinon
  */
-int init_ctx(struct ctx_s *ctx, int stack_size, func_t f, void* args);
+unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args);
 
 /**
  * \brief Fonction permettant d'échanger des contextes
@@ -18,18 +18,18 @@ void switch_to_ctx(struct ctx_s *ctx);
 
 void start_ctx();
 
-static struct ctx_s *ctx_ring = NULL;
-struct ctx_s *current_ctx = NULL;
+static struct ctx_s** ctx_ring;
+struct ctx_s** ctx_current;
 
 static int first_call = 1;
 void* initial_esp;
 void* initial_ebp;
 
-int init_ctx(struct ctx_s *ctx, int stack_size, func_t f, void* args){
+unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args){
 
     ctx->ctx_stack = malloc(stack_size);
     if(!ctx->ctx_stack){
-	perror("Erreur d'allocution pour la stack\n");
+	fprintf(stderr, "ERROR: Erreur d'allocution pour la stack\n");
 	return 0;
     }
 
@@ -43,14 +43,33 @@ int init_ctx(struct ctx_s *ctx, int stack_size, func_t f, void* args){
     return 1;
 }
 
+unsigned init_ctxsys(){
+
+    ctx_ring = malloc(sizeof(struct ctx_s*) * CORE_NCORE);
+    if(!ctx_ring){
+	fprintf(stderr, "ERROR: echec allocution des anneaux de contextes pour chaque coeur.\n");
+	return 0;
+    }
+
+    ctx_current = malloc(sizeof(struct ctx_s*) * CORE_NCORE);
+    if(!ctx_current){
+	fprintf(stderr, "ERROR: echec allocution des contextes courrantes pour chaque coeur.\n");
+	return 0;
+    }
+
+    *ctx_ring = NULL; 
+    *ctx_current = NULL;
+
+    return 1;
+}
 
 void switch_to_ctx(struct ctx_s *ctx){
 
     /* si ctx est null on retourne au main */
     if (ctx == ctx->next) {
 	first_call = 1;
-	current_ctx = NULL;
-	ctx_ring = NULL;
+	ctx_current[0] = NULL;
+	ctx_ring[0] = NULL;
 
 	asm("movl %0, %%esp"
 	    : 
@@ -63,11 +82,11 @@ void switch_to_ctx(struct ctx_s *ctx){
     }
 
     if(ctx->ctx_state == CTX_END) {
-	if(ctx_ring == ctx){
-	    ctx_ring = current_ctx;
+	if(ctx_ring[0] == ctx){
+	    ctx_ring[0] = ctx_current[0];
 	}
 
-	current_ctx->next = ctx->next;
+	ctx_current[0]->next = ctx->next;
 	free(ctx->ctx_stack);
 	free(ctx);
 	yield();
@@ -75,8 +94,8 @@ void switch_to_ctx(struct ctx_s *ctx){
 
     while(ctx->ctx_state == CTX_STP){
 	ctx = ctx->next;
-	if(ctx == current_ctx){
-	    perror("tous bloqués!\n");
+	if(ctx == ctx_current[0]){
+	    fprintf(stderr, "ERROR: tous bloqués!\n");
 	}
     }
 
@@ -91,17 +110,17 @@ void switch_to_ctx(struct ctx_s *ctx){
     }
   
 
-    if(current_ctx){
+    if(ctx_current[0]){
 	assert(ctx->ctx_magic == CTX_MAGIC);
 	asm("movl %%esp, %0"
-	    : "=r" (current_ctx->ctx_esp)
+	    : "=r" (ctx_current[0]->ctx_esp)
 	    : );
 	asm("movl %%ebp, %0"
-	    : "=r" (current_ctx->ctx_ebp)
+	    : "=r" (ctx_current[0]->ctx_ebp)
 	    : );
     }
 
-    current_ctx = ctx;
+    ctx_current[0] = ctx;
     asm("movl %0, %%esp"
 	: 
 	:"r" (ctx->ctx_esp));
@@ -113,16 +132,16 @@ void switch_to_ctx(struct ctx_s *ctx){
 }
 
 void start_ctx() {
-    if(current_ctx->ctx_state == CTX_INIT){
-	current_ctx->ctx_state = CTX_EXQ;
-	current_ctx->ctx_f(current_ctx->ctx_arg);
-	current_ctx->ctx_state = CTX_END;
+    if(ctx_current[0]->ctx_state == CTX_INIT){
+	ctx_current[0]->ctx_state = CTX_EXQ;
+	ctx_current[0]->ctx_f(ctx_current[0]->ctx_arg);
+	ctx_current[0]->ctx_state = CTX_END;
     
 	/* retour au main */
-	if(current_ctx == current_ctx->next) {
+	if(ctx_current[0] == ctx_current[0]->next) {
 	    first_call = 1;
-	    current_ctx = NULL;
-	    ctx_ring = NULL;
+	    ctx_current[0] = NULL;
+	    ctx_ring[0] = NULL;
 	    asm("movl %0, %%esp"
 		: 
 		:"r" (initial_esp));
@@ -140,26 +159,30 @@ int create_ctx(int stack_size, func_t f, void* arg) {
     struct ctx_s * new_ctx;
     new_ctx = malloc(sizeof (struct ctx_s));
   
-    if(new_ctx == NULL)
+    if(new_ctx == NULL){
+	fprintf(stderr, "ERROR: echec allocution du nouveau contexte.\n");
 	return 0;
+    }
 
-    if (ctx_ring != NULL) {
+    if (ctx_ring[0] != NULL) {
 	/* premier passage dans le create */
-	new_ctx -> next = ctx_ring -> next;
-	ctx_ring -> next = new_ctx;
+	new_ctx->next = ctx_ring[0]->next;
+	ctx_ring[0]->next = new_ctx;
     } else {
 	/* tous les autres passages */
-	ctx_ring = new_ctx;
-	new_ctx -> next = new_ctx;
+	ctx_ring[0] = new_ctx;
+	new_ctx->next = new_ctx;
     }
 
     return init_ctx(new_ctx, stack_size, f, arg);
 }
 
 void yield() {
-    if(current_ctx)
-	switch_to_ctx(current_ctx->next);
-    else /* premier passage */
-	switch_to_ctx(ctx_ring);
+    if(ctx_current[0]){
+	switch_to_ctx(ctx_current[0]->next);
+    } else {
+	/* premier passage */
+	switch_to_ctx(ctx_ring[0]);
+    }
 }
 

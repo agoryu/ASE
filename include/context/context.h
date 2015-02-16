@@ -18,7 +18,7 @@
  */
 #define CTX_MAGIC 0xCAFEBABE
 
-extern struct ctx_s *current_ctx;
+extern struct ctx_s** ctx_current;
 
 /**
  * \enum ctx_state_e
@@ -39,7 +39,7 @@ typedef void (func_t) (void*);
 struct ctx_s {
     void * ctx_esp;
     void * ctx_ebp;
-    unsigned int ctx_state;
+    unsigned ctx_state;
     func_t * ctx_f;
     void * ctx_arg;
     void * ctx_stack;
@@ -48,6 +48,13 @@ struct ctx_s {
     struct ctx_s * ctx_sem_next;
 };
 
+
+/**
+ * Initialise le système de contexte.
+ *
+ * \return 0 en cas d'erreur, sinon 1.
+ */
+unsigned init_ctxsys();
 
 /**
  * Crée un nouveau contexte et le mémorise dans une structure chaînée 

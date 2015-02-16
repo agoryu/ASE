@@ -14,35 +14,42 @@
 #include "hw/hardware.h"
 
 static void empty_it(){
-  return;
+    return;
 }
 
 void irq_disable() {
-  _mask(15);
+    _mask(15);
 }
 
 void irq_enable() {
-  _mask(1);
+    _mask(1);
 }
 
 unsigned boot() {
 
-  unsigned i;
+    unsigned i;
 
-  /* init hardware */
-  if(!init_hardware(HW_CONFIG)){
-    return 0;
-  }
+    /* init hardware */
+    if(!init_hardware(HW_CONFIG)){
+	fprintf(stderr, "FATAL: echec initialisation disque et coeurs.\n");
+	return 0;
+    }
 
-  /* Interreupt handlers */
-  for(i=0; i<16; i++){
-    IRQVECTOR[i] = empty_it;
-  }
+    /* Interreupt handlers */
+    for(i=0; i<16; i++){
+	IRQVECTOR[i] = empty_it;
+    }
 
-  IRQVECTOR[TIMER_IRQ] = yield;
+    IRQVECTOR[TIMER_IRQ] = yield;
 
-  /* Allows all IT */
-  _mask(1);
+    /* Allows all IT */
+    _mask(1);
 
-  return 1;
+    /* initialise le systeme de contexte multi coeur */
+    if(!init_ctxsys()){
+	fprintf(stderr, "FATAL: echec initialisation système de contextes.\n");
+	return 0;
+    }
+
+    return 1;
 }

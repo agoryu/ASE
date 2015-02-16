@@ -1,4 +1,5 @@
 #include "context/sem.h"
+#include "hw/hw.h"
 
 #define STACK_SIZE 16384
 #define N 10                       /* nombre de places dans le tampon */
@@ -13,6 +14,13 @@ void consommateur(void*);
 static objet_t buf[1];
 
 int main(){
+
+    /* init materiels */
+    if(!boot()){
+	fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
+	exit(EXIT_FAILURE);
+    }
+
     /* controle d'acces au tampon */
     sem_init(&mutex, 1);
     /* nb de places libres */
@@ -21,11 +29,11 @@ int main(){
     sem_init(&plein, 0);
 
     if( ! create_ctx(STACK_SIZE, producteur, NULL)){
-	fprintf(stderr, "Erreur creation de context");
+	fprintf(stderr, "ERROR: echec creation de contexte.\nt");
 	exit(EXIT_FAILURE);
     }
     if( ! create_ctx(STACK_SIZE, consommateur, NULL)){
-	fprintf(stderr, "Erreur creation de context");
+	fprintf(stderr, "ERROR: ehec creation de contexte.\n");
 	exit(EXIT_FAILURE);
     }
 
@@ -61,7 +69,7 @@ void producteur (void* arg)
 {
 
     if(arg){
-	fprintf(stderr, "Erreur: fonction producteur sans arguments");
+	fprintf(stderr, "ERROR: fonction producteur sans arguments");
 	return;
     }
 
@@ -81,7 +89,7 @@ void consommateur (void* arg)
 {
 
     if(arg){
-	fprintf(stderr, "Erreur: fonction consommateur sans arguments");
+	fprintf(stderr, "ERROR: fonction consommateur sans arguments");
 	return;
     }
 
