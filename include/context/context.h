@@ -37,15 +37,15 @@ typedef void (func_t) (void*);
  * Représente un contexte 
  */
 struct ctx_s {
-  void * ctx_esp;
-  void * ctx_ebp;
-  unsigned int ctx_state;
-  func_t * ctx_f;
-  void * ctx_arg;
-  void * ctx_stack;
-  unsigned ctx_magic;
-  struct ctx_s * next;
-  struct ctx_s * ctx_sem_next;
+    void * ctx_esp;
+    void * ctx_ebp;
+    unsigned int ctx_state;
+    func_t * ctx_f;
+    void * ctx_arg;
+    void * ctx_stack;
+    unsigned ctx_magic;
+    struct ctx_s * next;
+    struct ctx_s * ctx_sem_next;
 };
 
 

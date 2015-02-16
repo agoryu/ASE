@@ -157,8 +157,9 @@ obj/mmu/mi_kernel.o:	mmu/mi_kernel.c mmu/mi_syscall.h
 obj/shell/commande.o: 	shell/commande.c shell/commande.h
 
 obj/filesys/file.o:	filesys/file.c filesys/file.h
-obj/filesys/dir.o:	filesys/dir.c filesys/dir.h filesys/ifile.h filesys/tools.h filesys/super.h
+obj/filesys/dir.o:	filesys/dir.c filesys/dir.h
 obj/filesys/ifile.o:	filesys/ifile.c filesys/ifile.h
+obj/filesys/tools.o:	filesys/tools.c filesys/tools.h
 obj/filesys/inode.o:	filesys/inode.c filesys/inode.h
 obj/filesys/super.o:	filesys/super.c filesys/super.h
 obj/filesys/mbr.o:	filesys/mbr.c filesys/mbr.h
