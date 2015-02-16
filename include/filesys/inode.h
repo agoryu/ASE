@@ -27,12 +27,12 @@
  * \enum inode_type_e inode.h "inode.h"
  */
 enum inode_type_e {
-  /** Type d'inoeud fichier */
-  IT_FILE,
-  /** Type d'inoeud répertoire */
-  IT_DIR,
-  /** Autre type d'inoeud */
-  IT_OTHER
+    /** Type d'inoeud fichier */
+    IT_FILE,
+    /** Type d'inoeud répertoire */
+    IT_DIR,
+    /** Autre type d'inoeud */
+    IT_OTHER
 };
 
 /**
@@ -40,18 +40,18 @@ enum inode_type_e {
  * \struct inode_s "inode.h"  
  */
 struct inode_s {
-  /** nombre magique */
-  unsigned in_magic;
-  /** type d'inode */
-  enum inode_type_e in_type;
-  /** taille en octet du fichier */
-  unsigned in_size;
-  /** bloc direct */
-  unsigned in_direct[N_DIRECT];
-  /** bloc indirect composé de bloc direct */
-  unsigned in_indirect;
-  /** bloc double indirect composé de plusieurs bloc indirecte */
-  unsigned in_d_indirect;
+    /** nombre magique */
+    unsigned in_magic;
+    /** type d'inode */
+    enum inode_type_e in_type;
+    /** taille en octet du fichier */
+    unsigned in_size;
+    /** bloc direct */
+    unsigned in_direct[N_DIRECT];
+    /** bloc indirect composé de bloc direct */
+    unsigned in_indirect;
+    /** bloc double indirect composé de plusieurs bloc indirecte */
+    unsigned in_d_indirect;
 };
 
 /**

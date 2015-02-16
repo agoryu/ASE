@@ -80,48 +80,50 @@ bin/testCore:\
 
 bin/mmutest:\
 	obj/mmu/mi_user.o obj/mmu/mi_kernel.o \
-	obj/hw/hw.o | $(BINDIR)
+	obj/hw/hw.o obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/shell:\
 	obj/shell.o obj/shell/commande.o obj/filesys/tools.o \
 	obj/filesys/file.o obj/filesys/dir.o obj/filesys/ifile.o \
 	obj/filesys/inode.o obj/filesys/super.o obj/filesys/mbr.o \
-	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
+	obj/drive/drive.o obj/hw/hw.o \
+	obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mknfs:\
 	obj/mknfs.o obj/filesys/tools.o obj/filesys/dir.o \
 	obj/filesys/ifile.o obj/filesys/inode.o \
 	obj/filesys/super.o obj/filesys/mbr.o \
-	obj/drive/drive.o obj/hw/hw.o | $(BINDIR)
+	obj/drive/drive.o obj/hw/hw.o \
+	obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/dfs:\
 	obj/dfs.o obj/filesys/inode.o obj/filesys/super.o \
 	obj/filesys/mbr.o obj/drive/drive.o \
-	obj/hw/hw.o | $(BINDIR)
+	obj/hw/hw.o obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mkvol:\
 	obj/mkvol.o obj/filesys/inode.o obj/filesys/super.o \
 	obj/filesys/mbr.o obj/drive/drive.o \
-	obj/hw/hw.o | $(BINDIR)
+	obj/hw/hw.o obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/frmt:\
 	obj/frmt.o obj/drive/drive.o \
-	obj/hw/hw.o | $(BINDIR)
+	obj/hw/hw.o obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/strs:\
 	obj/strs.o obj/drive/drive.o \
-	obj/hw/hw.o | $(BINDIR)
+	obj/hw/hw.o obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/dmps:\
 	obj/dmps.o obj/drive/drive.o \
-	obj/hw/hw.o | $(BINDIR)
+	obj/hw/hw.o obj/context/context.o | $(BINDIR)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/prodcons:\

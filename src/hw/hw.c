@@ -39,7 +39,7 @@ unsigned boot() {
     IRQVECTOR[i] = empty_it;
   }
 
-  /*IRQVECTOR[TIMER_IRQ] = yield;*/
+  IRQVECTOR[TIMER_IRQ] = yield;
 
   /* Allows all IT */
   _mask(1);
