@@ -1,5 +1,4 @@
 #include "context/context.h"
-#include "hw/hw.h"
 #include "hw/hardware.h"
 
 /**
@@ -20,8 +19,10 @@ void switch_to_ctx(struct ctx_s *ctx);
 
 void start_ctx();
 
-static struct ctx_s** ctx_ring;
-struct ctx_s** ctx_current;
+/** Table des contextes de chaque coeur */
+static struct ctxs_by_core_s ctxs_tab[CORE_NCORE];
+
+struct ctx_s * ctx_current[CORE_NCORE];
 
 static int first_call = 1;
 void* initial_esp;
@@ -49,33 +50,25 @@ unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args){
 
 unsigned init_ctxsys(){
 
-	num_core = 0;
+    unsigned i;
 
-    ctx_ring = malloc(sizeof(struct ctx_s*) * CORE_NCORE);
-    if(!ctx_ring){
-        fprintf(stderr, "ERROR: echec allocution des anneaux de contextes pour chaque coeur.\n");
-        return 0;
+    for (i=0; i<CORE_NCORE; i++) {
+        ctxs_tab[i].ctxs_lenght = 0;
+        ctx_current[i] = NULL;
     }
-
-    ctx_current = malloc(sizeof(struct ctx_s*) * CORE_NCORE);
-    if(!ctx_current){
-        fprintf(stderr, "ERROR: echec allocution des contextes courrantes pour chaque coeur.\n");
-        return 0;
-    }
-
-    *ctx_ring = NULL; 
-    *ctx_current = NULL;
 
     return 1;
 }
 
 void switch_to_ctx(struct ctx_s *ctx){
 
+    unsigned core = _in(CORE_ID);
+
     /* si ctx est null on retourne au main */
     if (ctx == ctx->next) {
         first_call = 1;
-        ctx_current[0] = NULL;
-        ctx_ring[0] = NULL;
+        ctx_current[core] = NULL;
+        ctxs_tab[core].ctxs_ring = NULL;
 
         asm("movl %0, %%esp"
             : 
@@ -88,11 +81,11 @@ void switch_to_ctx(struct ctx_s *ctx){
     }
 
     if(ctx->ctx_state == CTX_END) {
-        if(ctx_ring[0] == ctx){
-            ctx_ring[0] = ctx_current[0];
+        if(ctxs_tab[core].ctxs_ring == ctx){
+            ctxs_tab[core].ctxs_ring = ctx_current[core];
         }
 
-        ctx_current[0]->next = ctx->next;
+        ctx_current[core]->next = ctx->next;
         free(ctx->ctx_stack);
         free(ctx);
         yield();
@@ -100,7 +93,7 @@ void switch_to_ctx(struct ctx_s *ctx){
 
     while(ctx->ctx_state == CTX_STP){
         ctx = ctx->next;
-        if(ctx == ctx_current[0]){
+        if(ctx == ctx_current[core]){
             fprintf(stderr, "ERROR: tous bloqués!\n");
         }
     }
@@ -116,17 +109,18 @@ void switch_to_ctx(struct ctx_s *ctx){
     }
   
 
-    if(ctx_current[0]){
+    if(ctx_current[core]){
+        /* TODO voir si on peu changer */
         assert(ctx->ctx_magic == CTX_MAGIC);
         asm("movl %%esp, %0"
-            : "=r" (ctx_current[0]->ctx_esp)
+            : "=r" (ctx_current[core]->ctx_esp)
             : );
         asm("movl %%ebp, %0"
-            : "=r" (ctx_current[0]->ctx_ebp)
+            : "=r" (ctx_current[core]->ctx_ebp)
             : );
     }
 
-    ctx_current[0] = ctx;
+    ctx_current[core] = ctx;
     asm("movl %0, %%esp"
         : 
         :"r" (ctx->ctx_esp));
@@ -138,16 +132,19 @@ void switch_to_ctx(struct ctx_s *ctx){
 }
 
 void start_ctx() {
-    if(ctx_current[0]->ctx_state == CTX_INIT){
-        ctx_current[0]->ctx_state = CTX_EXQ;
-        ctx_current[0]->ctx_f(ctx_current[0]->ctx_arg);
-        ctx_current[0]->ctx_state = CTX_END;
+
+    unsigned core = _in(CORE_ID);
+
+    if(ctx_current[core]->ctx_state == CTX_INIT){
+        ctx_current[core]->ctx_state = CTX_EXQ;
+        ctx_current[core]->ctx_f(ctx_current[core]->ctx_arg);
+        ctx_current[core]->ctx_state = CTX_END;
     
-        /* retour au main */
-        if(ctx_current[0] == ctx_current[0]->next) {
+        /* retour fonction d'origin du coeur */
+        if(ctx_current[core] == ctx_current[core]->next) {
             first_call = 1;
-            ctx_current[0] = NULL;
-            ctx_ring[0] = NULL;
+            ctx_current[core] = NULL;
+            ctxs_tab[core].ctxs_ring = NULL;
             asm("movl %0, %%esp"
                 : 
                 :"r" (initial_esp));
@@ -161,7 +158,7 @@ void start_ctx() {
 }
 
 int create_ctx(int stack_size, func_t f, void* arg) {
-  
+    
     struct ctx_s * new_ctx;
     new_ctx = malloc(sizeof (struct ctx_s));
   
@@ -170,14 +167,15 @@ int create_ctx(int stack_size, func_t f, void* arg) {
         return 0;
     }
 
-    if (ctx_ring[num_core] != NULL) {
-        /* premier passage dans le create */
-        new_ctx->next = ctx_ring[num_core]->next;
-        ctx_ring[num_core]->next = new_ctx;
-    } else {
-        /* tous les autres passages */
-        ctx_ring[num_core] = new_ctx;
+    if (ctxs_tab[num_core].ctxs_lenght == 0) {
+        /* si ce coeur n'a pas de contexte */
+        ctxs_tab[num_core].ctxs_ring = new_ctx;
         new_ctx->next = new_ctx;
+    } else {
+        /* sinon on insert un contexte */
+        new_ctx->next = ctxs_tab[num_core].ctxs_ring->next;
+        ctxs_tab[num_core].ctxs_ring->next = new_ctx;
+        
     }
 
     num_core = (num_core + 1) % CORE_NCORE;
@@ -187,15 +185,15 @@ int create_ctx(int stack_size, func_t f, void* arg) {
 
 void yield() {
 
-	int core = _in(CORE_ID);
-	
-    if(ctx_current[0]){
+    unsigned core = _in(CORE_ID);
+        
+    if(ctx_current[core]){
         printf(" coeur en cours -> %d\n", core);
         switch_to_ctx(ctx_current[core]->next);
     } else {
         /* premier passage */
         printf(" coeur en cours -> %d\n", core);
-        switch_to_ctx(ctx_ring[core]);
+        switch_to_ctx(ctxs_tab[core].ctxs_ring);
     }
 }
 
