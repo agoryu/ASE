@@ -17,8 +17,8 @@ int main(){
 
     /* init materiels */
     if(!boot()){
-	fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
+        exit(EXIT_FAILURE);
     }
 
     /* controle d'acces au tampon */
@@ -29,12 +29,12 @@ int main(){
     sem_init(&plein, 0);
 
     if( ! create_ctx(STACK_SIZE, producteur, NULL)){
-	fprintf(stderr, "ERROR: echec creation de contexte.\nt");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "ERROR: echec creation de contexte.\nt");
+        exit(EXIT_FAILURE);
     }
     if( ! create_ctx(STACK_SIZE, consommateur, NULL)){
-	fprintf(stderr, "ERROR: ehec creation de contexte.\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "ERROR: ehec creation de contexte.\n");
+        exit(EXIT_FAILURE);
     }
 
 
@@ -69,19 +69,19 @@ void producteur (void* arg)
 {
 
     if(arg){
-	fprintf(stderr, "ERROR: fonction producteur sans arguments");
-	return;
+        fprintf(stderr, "ERROR: fonction producteur sans arguments");
+        return;
     }
 
     objet_t objet ;
 
     while (1) {
-	produire_objet(&objet);           /* produire l'objet suivant */
-	sem_down(&vide);                  /* dec. nb places libres */
-	sem_down(&mutex);                 /* entree en section critique */
-	mettre_objet(objet);              /* mettre l'objet dans le tampon */
-	sem_up(&mutex);                   /* sortie de section critique */
-	sem_up(&plein);                   /* inc. nb place occupees */
+        produire_objet(&objet);           /* produire l'objet suivant */
+        sem_down(&vide);                  /* dec. nb places libres */
+        sem_down(&mutex);                 /* entree en section critique */
+        mettre_objet(objet);              /* mettre l'objet dans le tampon */
+        sem_up(&mutex);                   /* sortie de section critique */
+        sem_up(&plein);                   /* inc. nb place occupees */
     }
 }
 
@@ -89,18 +89,18 @@ void consommateur (void* arg)
 {
 
     if(arg){
-	fprintf(stderr, "ERROR: fonction consommateur sans arguments");
-	return;
+        fprintf(stderr, "ERROR: fonction consommateur sans arguments");
+        return;
     }
 
     objet_t objet ;
 
     while (1) {
-	sem_down(&plein);                 /* dec. nb emplacements occupes */
-	sem_down(&mutex);                 /* entree section critique */
-	retirer_objet (&objet);           /* retire un objet du tampon */
-	sem_up(&mutex);                   /* sortie de la section critique */
-	sem_up(&vide);                    /* inc. nb emplacements libres */
-	utiliser_objet(objet);            /* utiliser l'objet */
+        sem_down(&plein);                 /* dec. nb emplacements occupes */
+        sem_down(&mutex);                 /* entree section critique */
+        retirer_objet (&objet);           /* retire un objet du tampon */
+        sem_up(&mutex);                   /* sortie de la section critique */
+        sem_up(&vide);                    /* inc. nb emplacements libres */
+        utiliser_objet(objet);            /* utiliser l'objet */
     }
 }
