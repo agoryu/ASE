@@ -37,7 +37,7 @@ int main(){
 	exit(EXIT_FAILURE);
     }
 
-
+    yield();
     /*start_sched(yield);*/
 
     printf("\nRetour au main\n");
