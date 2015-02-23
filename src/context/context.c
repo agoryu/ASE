@@ -1,4 +1,6 @@
 #include "context/context.h"
+#include "hw/hw.h"
+#include "hw/hardware.h"
 
 /**
  * \brief Fonction permettant l'initiation d'un contexte 
@@ -25,6 +27,8 @@ static int first_call = 1;
 void* initial_esp;
 void* initial_ebp;
 
+int num_core;
+
 unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args){
 
     ctx->ctx_stack = malloc(stack_size);
@@ -44,6 +48,8 @@ unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args){
 }
 
 unsigned init_ctxsys(){
+
+	num_core = 0;
 
     ctx_ring = malloc(sizeof(struct ctx_s*) * CORE_NCORE);
     if(!ctx_ring){
@@ -164,25 +170,32 @@ int create_ctx(int stack_size, func_t f, void* arg) {
 	return 0;
     }
 
-    if (ctx_ring[0] != NULL) {
+    if (ctx_ring[num_core] != NULL) {
 	/* premier passage dans le create */
-	new_ctx->next = ctx_ring[0]->next;
-	ctx_ring[0]->next = new_ctx;
+	new_ctx->next = ctx_ring[num_core]->next;
+	ctx_ring[num_core]->next = new_ctx;
     } else {
 	/* tous les autres passages */
-	ctx_ring[0] = new_ctx;
+	ctx_ring[num_core] = new_ctx;
 	new_ctx->next = new_ctx;
     }
+
+    num_core = (num_core + 1) % CORE_NCORE;
 
     return init_ctx(new_ctx, stack_size, f, arg);
 }
 
 void yield() {
-    if(ctx_current[0]){
-	switch_to_ctx(ctx_current[0]->next);
+
+	int core = _in(CORE_ID);
+	
+    if(ctx_current[core]){
+    	printf(" coeur en cours -> %d\n", core);
+	switch_to_ctx(ctx_current[core]->next);
     } else {
 	/* premier passage */
-	switch_to_ctx(ctx_ring[0]);
+    	printf(" coeur en cours -> %d\n", core);
+	switch_to_ctx(ctx_ring[core]);
     }
 }
 
