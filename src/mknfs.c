@@ -22,42 +22,42 @@ int main(int argc, char* argv[]){
     unsigned chosen_vol;
   
     if(argc == 1){
-	chosen_vol = MAIN_VOLUME;
+        chosen_vol = MAIN_VOLUME;
     } else if(argc == 2){
-	chosen_vol = atoi(argv[1]);
+        chosen_vol = atoi(argv[1]);
     } else {
-	usage(argv[1]);
+        usage(argv[1]);
     }
 
     /* init hardware */
     if(!boot()) {
-	fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
+        exit(EXIT_FAILURE);
     }
 
     /* chargement du mbr */
     if(!load_mbr()){
-	fprintf(stderr, "WARNING: Disque viège ou corrompu.\n");
-	exit(EXIT_SUCCESS);
+        fprintf(stderr, "WARNING: Disque viège ou corrompu.\n");
+        exit(EXIT_SUCCESS);
     }
 
     if(!mount(chosen_vol)){
-	fprintf(stderr, "ERROR: Super bloc invalide.\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "ERROR: Super bloc invalide.\n");
+        exit(EXIT_FAILURE);
     }
   
     if(!has_root()){
-	iroot = create_ifile(IT_DIR);
-	init_root(iroot);
-	add_entry(iroot, iroot, ROOTNAME);
+        iroot = create_ifile(IT_DIR);
+        init_root(iroot);
+        add_entry(iroot, iroot, ROOTNAME);
     } else {
-	fprintf(stderr, "WARNING: Le root existe déjà.\n");
-	exit(EXIT_SUCCESS);
+        fprintf(stderr, "WARNING: Le root existe déjà.\n");
+        exit(EXIT_SUCCESS);
     }
 
     if(!umount()){
-	fprintf(stderr, "ERROR: Problème lors du démontage du disque.\n");
-	exit(EXIT_FAILURE);
+        fprintf(stderr, "ERROR: Problème lors du démontage du disque.\n");
+        exit(EXIT_FAILURE);
     }
 
     printf("Le système de fichiers a été créé avec succès.\n");  
