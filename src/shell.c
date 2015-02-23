@@ -13,24 +13,24 @@ int main() {
 
     /* init hardware */
     if(!boot()){
-    	fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
-    	exit(EXIT_FAILURE);
+        fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
+        exit(EXIT_FAILURE);
     }
 
     /* chargement du mbr */
     if(!load_mbr()){
-    	fprintf(stderr, "FATAL: Erreur lors du chargement du Master Boot Record.\n");
-    	exit(EXIT_FAILURE);
+        fprintf(stderr, "FATAL: Erreur lors du chargement du Master Boot Record.\n");
+        exit(EXIT_FAILURE);
     }
 
     if(!mount(MAIN_VOLUME)){
-    	fprintf(stderr, "FATAL: Impossible de monté le disque principal.\n");
-    	exit(EXIT_FAILURE);
+        fprintf(stderr, "FATAL: Impossible de monté le disque principal.\n");
+        exit(EXIT_FAILURE);
     }
 
     /* allocation des options de la commande */
     for(cpt=0; cpt < MAX_COMMAND; cpt++) {
-	command[cpt] = malloc(MAX_OPTION * sizeof(char));
+        command[cpt] = malloc(MAX_OPTION * sizeof(char));
     }
     cpt = 0;
 
@@ -68,10 +68,10 @@ int main() {
         }
 
         if(strcmp(entry, "exit\n") != 0) {
-	    printf("%d\n", num_option);
+            printf("%d\n", num_option);
 
             if(command[0][0] == '&') {
-		printf("not yet\n");
+                printf("not yet\n");
             }
             if(execute(num_option, command) == RETURN_FAILURE){
                 fprintf(stderr, "ERROR: La commande n'a pas fonctionné.\n");

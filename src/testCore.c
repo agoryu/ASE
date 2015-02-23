@@ -17,60 +17,60 @@
 #define CORE_UNLOCK 0x99
 
 static void empty_it(){
-  return;
+    return;
 }
 
 static void print_number(){
-	int num = _in(CORE_ID);
-	int cpt = 0;
-	int status;
+    int num = _in(CORE_ID);
+    int cpt = 0;
+    int status;
 
-	status = _in(CORE_LOCK);
-	if(status == 1) {
-		printf("coeur %d debut\n", num);
-		while(cpt++ != 10000000) {
-			/*printf("%d", cpt);*/
-		}
-		printf("coeur %d fin\n", num);
-		_out(CORE_UNLOCK, 0);
-	}
+    status = _in(CORE_LOCK);
+    if(status == 1) {
+        printf("coeur %d debut\n", num);
+        while(cpt++ != 10000000) {
+            /*printf("%d", cpt);*/
+        }
+        printf("coeur %d fin\n", num);
+        _out(CORE_UNLOCK, 0);
+    }
     return;
 }
 
 int main() {
 
-	unsigned i;
+    unsigned i;
 
-	if(!init_hardware("etc/core.ini")){
-		printf("pas retrouvé le .ini");
-		return 0;
-	}
+    if(!init_hardware("etc/core.ini")){
+        printf("pas retrouvé le .ini");
+        return 0;
+    }
 
-	/* Interreupt handlers */
-	for(i=0; i<16; i++){
-		IRQVECTOR[i] = empty_it;
-	}
+    /* Interreupt handlers */
+    for(i=0; i<16; i++){
+        IRQVECTOR[i] = empty_it;
+    }
 
-	IRQVECTOR[0] = print_number;
-	IRQVECTOR[TIMER_IRQ] = print_number;
-	/*create_ctx(STACK_SIZE, print_number, NULL);*/
+    IRQVECTOR[0] = print_number;
+    IRQVECTOR[TIMER_IRQ] = print_number;
+    /*create_ctx(STACK_SIZE, print_number, NULL);*/
 
-	for(i=0; i<4; i++) {
-		_out(CORE_IRQMAPPER + i, 1);
-	}
+    for(i=0; i<4; i++) {
+        _out(CORE_IRQMAPPER + i, 1);
+    }
 
-	_out(TIMER_ALARM, 0xffffffff - 20);
-	_out(TIMER_PARAM, 128 + 64 + 32 + 16 + 8);
+    _out(TIMER_ALARM, 0xffffffff - 20);
+    _out(TIMER_PARAM, 128 + 64 + 32 + 16 + 8);
 
-	_mask(1);
-	
-	_out(CORE_STATUS, 0xF);
+    _mask(1);
+        
+    _out(CORE_STATUS, 0xF);
 
-	print_number();
+    print_number();
 
-	/*while(i != 10000000) i++;*/
-	while(1);
+    /*while(i != 10000000) i++;*/
+    while(1);
 
-	return 0;
+    return 0;
 
 }
