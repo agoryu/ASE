@@ -75,7 +75,7 @@ void flush_ifile(file_desc_t *fd){
 
     if (fd-> fds_dirty) {
         /* compute the number of the bloc on the volume associated to
-       the buffer */
+           the buffer */
         fbloc = bloc_of_pos(fd->fds_pos);
         vbloc = vbloc_of_fbloc(fd-> fds_inumber, fbloc, TRUE);
 
@@ -241,7 +241,7 @@ int iopen_ifile(file_desc_t *fd, unsigned int inumber, struct inode_s *inode){
     fd->fds_pos = 0;
 
     /* the buffer is full of zeros if the first bloc is zero, loaded
-     with this first bloc otherwise */
+       with this first bloc otherwise */
     first_bloc = vbloc_of_fbloc(inumber, 0, FALSE);
     if (! first_bloc){
         memset(fd->fds_buf, 0, BLOC_SIZE);

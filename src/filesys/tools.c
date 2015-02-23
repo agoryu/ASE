@@ -19,14 +19,14 @@
 int fatal(int assert, const char *fname, const char *fmt, ...){
 
     if (! assert) {
-	va_list ap;
-	va_start(ap, fmt);
-	
-	fprintf(stderr, "[Error] %s: ", fname);
-	vfprintf(stderr, fmt, ap);
-	fputc ('\n', stderr);
+        va_list ap;
+        va_start(ap, fmt);
+        
+        fprintf(stderr, "[Error] %s: ", fname);
+        vfprintf(stderr, fmt, ap);
+        fputc ('\n', stderr);
 
-	exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     /* make gcc -W happy */
@@ -47,7 +47,7 @@ char* strdup(const char *s){
     
     siz = strlen(s) + 1;
     if ((copy = malloc(siz)) == NULL)
-	return(NULL);
+        return(NULL);
     (void)memcpy(copy, s, siz);
     return(copy);
 }

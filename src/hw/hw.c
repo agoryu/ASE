@@ -36,13 +36,13 @@ unsigned boot() {
 
     /* init hardware */
     if(!init_hardware(HW_CONFIG)){
-	fprintf(stderr, "FATAL: echec initialisation disque et coeurs.\n");
-	return 0;
+        fprintf(stderr, "FATAL: echec initialisation disque et coeurs.\n");
+        return 0;
     }
 
     /* Interreupt handlers */
     for(i=0; i<16; i++){
-	IRQVECTOR[i] = empty_it;
+        IRQVECTOR[i] = empty_it;
     }
 
     IRQVECTOR[0] = again;
@@ -60,8 +60,8 @@ unsigned boot() {
 
     /* initialise le systeme de contexte multi coeur */
     if(!init_ctxsys()){
-	fprintf(stderr, "FATAL: echec initialisation système de contextes.\n");
-	return 0;
+        fprintf(stderr, "FATAL: echec initialisation système de contextes.\n");
+        return 0;
     }
 
     return 1;

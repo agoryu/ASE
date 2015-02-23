@@ -12,13 +12,13 @@ void sem_down(struct sem_s * sem){
 
     sem->sem_cpt --;
     if(sem->sem_cpt < 0){
-	ctx_current[0]->ctx_state = CTX_STP;
-	ctx_current[0]->ctx_sem_next = sem->sem_ctx;
-	sem->sem_ctx = ctx_current[0];
-	irq_enable();
-	yield();
+        ctx_current[0]->ctx_state = CTX_STP;
+        ctx_current[0]->ctx_sem_next = sem->sem_ctx;
+        sem->sem_ctx = ctx_current[0];
+        irq_enable();
+        yield();
     } else {
-	irq_enable();
+        irq_enable();
     }
 }
 
@@ -28,8 +28,8 @@ void sem_up(struct sem_s * sem){
 
     sem->sem_cpt++;
     if(sem->sem_cpt <= 0){
-	sem->sem_ctx->ctx_state = CTX_EXQ;
-	sem->sem_ctx = sem->sem_ctx->ctx_sem_next;
+        sem->sem_ctx->ctx_state = CTX_EXQ;
+        sem->sem_ctx = sem->sem_ctx->ctx_sem_next;
     }
 
     irq_enable();
