@@ -13,6 +13,11 @@
 #include "hw/hw.h"
 #include "hw/hardware.h"
 
+static void again(){
+    while(1);
+    return;
+}
+
 static void empty_it(){
     return;
 }
@@ -40,7 +45,15 @@ unsigned boot() {
 	IRQVECTOR[i] = empty_it;
     }
 
+    IRQVECTOR[0] = again;
     IRQVECTOR[TIMER_IRQ] = yield;
+
+    for(i=0; i<CORE_NCORE; i++) {
+        _out(CORE_IRQMAPPER + i, 1);
+    }
+
+    _out(TIMER_ALARM, 0xffffffff - 20);
+    _out(TIMER_PARAM, 128 + 64 + 32 + 16 + 8);
 
     /* Allows all IT */
     _mask(1);
