@@ -1,6 +1,6 @@
 #include "context/sem.h"
 #include "hw/hw.h"
-
+#include <unistd.h>
 #define STACK_SIZE 16384
 #define N 10                       /* nombre de places dans le tampon */
 
@@ -21,6 +21,9 @@ int main(){
         exit(EXIT_FAILURE);
     }
 
+    sleep(10000);
+    printf("je m'en fou ce qui a dedans 1\n");
+
     /* controle d'acces au tampon */
     sem_init(&mutex, 1);
     /* nb de places libres */
@@ -28,16 +31,22 @@ int main(){
     /* nb de places occupees */
     sem_init(&plein, 0);
 
+    printf("je m'en fou ce qui a dedans 2\n");
+    sleep(10000);
     if( ! create_ctx(STACK_SIZE, producteur, NULL)){
         fprintf(stderr, "ERROR: echec creation de contexte.\nt");
         exit(EXIT_FAILURE);
     }
+    
+    printf("je m'en fou ce qui a dedans 3\n");
+    sleep(10000);
     if( ! create_ctx(STACK_SIZE, consommateur, NULL)){
         fprintf(stderr, "ERROR: ehec creation de contexte.\n");
         exit(EXIT_FAILURE);
     }
 
-    yield();
+    while(1);
+    /*yield();*/
     /*start_sched(yield);*/
 
     printf("\nRetour au main\n");

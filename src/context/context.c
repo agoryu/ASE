@@ -1,5 +1,7 @@
 #include "context/context.h"
 #include "hw/hardware.h"
+#include "context/sem.h"
+#include <unistd.h>
 
 /**
  * \brief Fonction permettant l'initiation d'un contexte 
@@ -33,6 +35,7 @@ int num_core;
 unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args){
 
     ctx->ctx_stack = malloc(stack_size);
+    num_core = 1;
     if(!ctx->ctx_stack){
         fprintf(stderr, "ERROR: Erreur d'allocution pour la stack\n");
         return 0;
@@ -65,7 +68,7 @@ void switch_to_ctx(struct ctx_s *ctx){
     unsigned core = _in(CORE_ID);
 
     /* si ctx est null on retourne au main */
-    if (ctx == ctx->next) {
+    /*if (ctx == ctx->next) {
         first_call = 1;
         ctx_current[core] = NULL;
         ctxs_tab[core].ctxs_ring = NULL;
@@ -73,12 +76,13 @@ void switch_to_ctx(struct ctx_s *ctx){
         asm("movl %0, %%esp"
             : 
             :"r" (initial_esp));
+
         asm("movl %0, %%ebp"
             :
             :"r" (initial_ebp));
 
         return;
-    }
+    }*/
 
     if(ctx->ctx_state == CTX_END) {
         if(ctxs_tab[core].ctxs_ring == ctx){
@@ -91,12 +95,13 @@ void switch_to_ctx(struct ctx_s *ctx){
         yield();
     }
 
-    while(ctx->ctx_state == CTX_STP){
+    /*while(ctx->ctx_state == CTX_STP){
         ctx = ctx->next;
         if(ctx == ctx_current[core]){
-            fprintf(stderr, "ERROR: tous bloqués!\n");
+            fprintf(stderr, "ERROR: coeur %d bloqués!\n", core);
+            return;
         }
-    }
+    }*/
 
     if(first_call){
         first_call = 0;
@@ -107,7 +112,7 @@ void switch_to_ctx(struct ctx_s *ctx){
             : "=r" (initial_ebp)
             : );
     }
-  
+    printf("sloupy %d\n", core);
 
     if(ctx_current[core]){
         /* TODO voir si on peu changer */
@@ -178,6 +183,7 @@ int create_ctx(int stack_size, func_t f, void* arg) {
         
     }
 
+    printf("num_core = %d\n", num_core);
     num_core = (num_core + 1) % CORE_NCORE;
 
     return init_ctx(new_ctx, stack_size, f, arg);
@@ -186,14 +192,22 @@ int create_ctx(int stack_size, func_t f, void* arg) {
 void yield() {
 
     unsigned core = _in(CORE_ID);
-        
-    if(ctx_current[core]){
-        printf(" coeur en cours -> %d\n", core);
-        switch_to_ctx(ctx_current[core]->next);
-    } else {
-        /* premier passage */
-        printf(" coeur en cours -> %d\n", core);
-        switch_to_ctx(ctxs_tab[core].ctxs_ring);
+    /*int status;*/
+
+    /*while(status != 1) status = _in(CORE_LOCK);*/
+    printf("sloupy %d\n", core);
+    if(core <= num_core) {
+        if(ctx_current[core]){
+            printf(" coeur en cours -> %d\n", core);
+            switch_to_ctx(ctx_current[core]->next);
+        } else {
+            /* premier passage */
+            printf(" coeur en cours -> %d\n", core);
+            switch_to_ctx(ctxs_tab[core].ctxs_ring);
+        }
     }
+    /*_out(CORE_UNLOCK, 0);*/
 }
+
+
 

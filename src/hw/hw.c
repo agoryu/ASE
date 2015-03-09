@@ -14,6 +14,7 @@
 #include "hw/hardware.h"
 
 static void again(){
+    _mask(1);
     while(1);
     return;
 }
@@ -48,15 +49,18 @@ unsigned boot() {
     IRQVECTOR[0] = again;
     IRQVECTOR[TIMER_IRQ] = yield;
 
-    for(i=0; i<CORE_NCORE; i++) {
-        _out(CORE_IRQMAPPER + i, 1);
+    for(i=1; i<CORE_NCORE; i++) {
+        _out(CORE_IRQMAPPER + i, 0xffffffff);
     }
+    _out(CORE_IRQMAPPER, 0);
 
     _out(TIMER_ALARM, 0xffffffff - 20);
-    _out(TIMER_PARAM, 128 + 64 + 32 + 16 + 8);
+    _out(TIMER_PARAM, 1 << 6);/*128 + 64 + 32 + 16 + 8);*/
 
     /* Allows all IT */
     _mask(1);
+
+    _out(CORE_STATUS, 0xF);
 
     /* initialise le systeme de contexte multi coeur */
     if(!init_ctxsys()){

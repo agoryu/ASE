@@ -20,20 +20,25 @@ static void empty_it(){
     return;
 }
 
+static void again(){
+    _mask(1);
+    while(1);
+    return;
+}
+
 static void print_number(){
     int num = _in(CORE_ID);
     int cpt = 0;
     int status;
 
-    status = _in(CORE_LOCK);
-    if(status == 1) {
-        printf("coeur %d debut\n", num);
-        while(cpt++ != 10000000) {
-            /*printf("%d", cpt);*/
-        }
-        printf("coeur %d fin\n", num);
-        _out(CORE_UNLOCK, 0);
+    while(status != 1) status = _in(CORE_LOCK);
+
+    printf("coeur %d debut\n", num);
+    while(cpt++ != 10000000) {
+        /*printf("%d", cpt);*/
     }
+    printf("coeur %d fin\n", num);
+    _out(CORE_UNLOCK, 0);
     return;
 }
 
@@ -51,22 +56,22 @@ int main() {
         IRQVECTOR[i] = empty_it;
     }
 
-    IRQVECTOR[0] = print_number;
+    IRQVECTOR[0] = again;
     IRQVECTOR[TIMER_IRQ] = print_number;
-    /*create_ctx(STACK_SIZE, print_number, NULL);*/
 
-    for(i=0; i<4; i++) {
-        _out(CORE_IRQMAPPER + i, 1);
+    for(i=1; i<4; i++) {
+        _out(CORE_IRQMAPPER + i, 0xffffffff);
     }
+    _out(CORE_IRQMAPPER, 0);
 
     _out(TIMER_ALARM, 0xffffffff - 20);
-    _out(TIMER_PARAM, 128 + 64 + 32 + 16 + 8);
+    _out(TIMER_PARAM, 1 << 6);
 
     _mask(1);
         
     _out(CORE_STATUS, 0xF);
 
-    print_number();
+    /*print_number();*/
 
     /*while(i != 10000000) i++;*/
     while(1);
