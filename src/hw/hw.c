@@ -13,6 +13,8 @@
 #include "hw/hw.h"
 #include "hw/hardware.h"
 
+#define STACK_SIZE 16384
+
 static void again(){
     _mask(1);
     while(1);
@@ -31,6 +33,16 @@ void irq_enable() {
     _mask(1);
 }
 
+void start(){
+    int n_core = _in(CORE_ID);
+    printf("Core : %d\n", n_core);
+    if( ! create_ctx(STACK_SIZE, again, NULL)){
+        fprintf(stderr, "ERROR: echec creation de contexte.\nt");
+        exit(EXIT_FAILURE);
+    }
+    yield();
+}
+
 unsigned boot() {
 
     unsigned i;
@@ -41,12 +53,14 @@ unsigned boot() {
         return 0;
     }
 
+    irq_disable();
+
     /* Interreupt handlers */
     for(i=0; i<16; i++){
         IRQVECTOR[i] = empty_it;
     }
 
-    IRQVECTOR[0] = again;
+    IRQVECTOR[0] = start;
     IRQVECTOR[TIMER_IRQ] = yield;
 
     for(i=1; i<CORE_NCORE; i++) {
@@ -68,5 +82,6 @@ unsigned boot() {
         return 0;
     }
 
+    irq_enable();
     return 1;
 }

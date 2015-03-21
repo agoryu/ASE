@@ -1,6 +1,7 @@
 #include "context/context.h"
 #include "hw/hardware.h"
 #include "context/sem.h"
+#include "hw/hw.h"
 #include <unistd.h>
 
 /**
@@ -193,9 +194,9 @@ void yield() {
 
     unsigned core = _in(CORE_ID);
     /*int status;*/
+    _out(TIMER_ALARM, 0xFFFFFFFF-20);
 
     /*while(status != 1) status = _in(CORE_LOCK);*/
-    printf("sloupy %d\n", core);
     if(core <= num_core) {
         if(ctx_current[core]){
             printf(" coeur en cours -> %d\n", core);

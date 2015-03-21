@@ -15,14 +15,15 @@ static objet_t buf[1];
 
 int main(){
 
+    printf("debut main\n");
     /* init materiels */
     if(!boot()){
         fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
         exit(EXIT_FAILURE);
     }
 
-    sleep(10000);
-    printf("je m'en fou ce qui a dedans 1\n");
+    sleep(1000);
+    printf("passage du boot\n");
 
     /* controle d'acces au tampon */
     sem_init(&mutex, 1);
@@ -31,15 +32,11 @@ int main(){
     /* nb de places occupees */
     sem_init(&plein, 0);
 
-    printf("je m'en fou ce qui a dedans 2\n");
-    sleep(10000);
     if( ! create_ctx(STACK_SIZE, producteur, NULL)){
         fprintf(stderr, "ERROR: echec creation de contexte.\nt");
         exit(EXIT_FAILURE);
     }
     
-    printf("je m'en fou ce qui a dedans 3\n");
-    sleep(10000);
     if( ! create_ctx(STACK_SIZE, consommateur, NULL)){
         fprintf(stderr, "ERROR: ehec creation de contexte.\n");
         exit(EXIT_FAILURE);
