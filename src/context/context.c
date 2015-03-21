@@ -65,6 +65,10 @@ unsigned init_ctxsys(){
 void switch_to_ctx(struct ctx_s *ctx){
 
     unsigned core = _in(CORE_ID);
+    if(ctx == NULL) {
+        printf("aucun contexte dans switch_to_ctx\n");
+        return;
+    }
 
     /* si ctx est null on retourne au main */
     /*if (ctx == ctx->next) {
@@ -111,8 +115,6 @@ void switch_to_ctx(struct ctx_s *ctx){
             : "=r" (initial_ebp)
             : );
     }
-
-    printf("sloupy %d\n", core);
 
     if(ctx_current[core]){
         /* TODO voir si on peu changer */
@@ -175,10 +177,12 @@ int create_ctx(int stack_size, func_t f, void* arg, unsigned num_core) {
     if (ctxs_tab[num_core].ctxs_lenght == 0) {
         /* si ce coeur n'a pas de contexte */
         ctxs_tab[num_core].ctxs_ring = new_ctx;
+        ctxs_tab->ctxs_lenght++;
         new_ctx->next = new_ctx;
     } else {
         /* sinon on insert un contexte */
         new_ctx->next = ctxs_tab[num_core].ctxs_ring->next;
+        ctxs_tab->ctxs_lenght++;
         ctxs_tab[num_core].ctxs_ring->next = new_ctx;
         
     }
@@ -194,16 +198,15 @@ void yield() {
 
     irq_disable();
     /*while(status != 1) status = _in(CORE_LOCK);*/
-    /*if(core <= num_core) {*/
-        if(ctx_current[core]){
-            printf(" coeur en cours -> %d\n", core);
-            switch_to_ctx(ctx_current[core]->next);
-        } else {
-            /* premier passage */
-            printf(" coeur en cours -> %d\n", core);
-            switch_to_ctx(ctxs_tab[core].ctxs_ring);
-        }
-    /*}*/
+
+    if(ctx_current[core]){
+        printf(" coeur en cours -> %d\n", core);
+        switch_to_ctx(ctx_current[core]->next);
+    } else {
+        /* premier passage */
+        printf(" coeur en cours -> %d\n", core);
+        switch_to_ctx(ctxs_tab[core].ctxs_ring);
+    }
     irq_enable();
     /*_out(CORE_UNLOCK, 0);*/
 }

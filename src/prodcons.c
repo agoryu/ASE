@@ -22,7 +22,6 @@ int main(){
         exit(EXIT_FAILURE);
     }
 
-    sleep(1000);
     printf("passage du boot\n");
 
     /* controle d'acces au tampon */
@@ -32,12 +31,12 @@ int main(){
     /* nb de places occupees */
     sem_init(&plein, 0);
 
-    if( ! create_ctx(STACK_SIZE, producteur, NULL)){
+    if( ! create_ctx(STACK_SIZE, producteur, NULL, 1)){
         fprintf(stderr, "ERROR: echec creation de contexte.\nt");
         exit(EXIT_FAILURE);
     }
     
-    if( ! create_ctx(STACK_SIZE, consommateur, NULL)){
+    if( ! create_ctx(STACK_SIZE, consommateur, NULL, 2)){
         fprintf(stderr, "ERROR: ehec creation de contexte.\n");
         exit(EXIT_FAILURE);
     }

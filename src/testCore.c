@@ -42,6 +42,12 @@ static void print_number(){
     return;
 }
 
+static void infinity() {
+    while(1) {
+        print_number();
+    }
+}
+
 int main() {
 
     unsigned i;
@@ -57,7 +63,7 @@ int main() {
     }
 
     IRQVECTOR[0] = again;
-    IRQVECTOR[TIMER_IRQ] = print_number;
+    IRQVECTOR[TIMER_IRQ] = infinity;
 
     for(i=1; i<4; i++) {
         _out(CORE_IRQMAPPER + i, 0xffffffff);

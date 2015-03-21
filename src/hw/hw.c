@@ -15,11 +15,11 @@
 
 #define STACK_SIZE 16384
 
-static void again(){
+/*static void again(){
     _mask(1);
     while(1);
     return;
-}
+}*/
 
 static void empty_it(){
     return;
@@ -36,11 +36,13 @@ void irq_enable() {
 void start(){
     int n_core = _in(CORE_ID);
     printf("Core : %d\n", n_core);
-    if( ! create_ctx(STACK_SIZE, again, NULL)){
-        fprintf(stderr, "ERROR: echec creation de contexte.\nt");
+    _mask(1);
+    /*if( ! create_ctx(STACK_SIZE, again, NULL, n_core)){
+        fprintf(stderr, "ERROR: ehec creation de contexte.\n");
         exit(EXIT_FAILURE);
-    }
+    }*/
     yield();
+    while(1);
 }
 
 unsigned boot() {
@@ -50,6 +52,12 @@ unsigned boot() {
     /* init hardware */
     if(!init_hardware(HW_CONFIG)){
         fprintf(stderr, "FATAL: echec initialisation disque et coeurs.\n");
+        return 0;
+    }
+
+    /* initialise le systeme de contexte multi coeur */
+    if(!init_ctxsys()){
+        fprintf(stderr, "FATAL: echec initialisation système de contextes.\n");
         return 0;
     }
 
@@ -75,12 +83,6 @@ unsigned boot() {
     _mask(1);
 
     _out(CORE_STATUS, 0xF);
-
-    /* initialise le systeme de contexte multi coeur */
-    if(!init_ctxsys()){
-        fprintf(stderr, "FATAL: echec initialisation système de contextes.\n");
-        return 0;
-    }
 
     irq_enable();
     return 1;

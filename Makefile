@@ -75,7 +75,7 @@ all: $(BINPATHS) $(OBJPATHS) $(RESSOURCES) $(LIBRARIES) bin/mmutest
 ### Make binaries
 ###------------------------------------------------------------
 bin/testCore:\
-	obj/context/context.o obj/testCore.o
+	obj/context/context.o obj/testCore.o obj/hw/hw.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBFLAGS)
 
 bin/mmutest:\
