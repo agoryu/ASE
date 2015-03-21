@@ -16,18 +16,20 @@ unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args);
 
 /**
  * \brief Fonction permettant d'échanger des contextes
- * \param[in] ctx context qui sera actif
+ * \param[in] ctx Le context qui sera actif.
+ * \param[in] core Le coeur de context.
  */
-void switch_to_ctx(struct ctx_s *ctx);
+void switch_to_ctx(struct ctx_s *ctx, const unsigned core);
 
 void start_ctx();
 
 /** Table des contextes de chaque coeur */
-static struct ctxs_by_core_s ctxs_tab[CORE_NCORE];
+static struct ctxs_by_core_s * ctxs_tab[CORE_NCORE];
 
 struct ctx_s * ctx_current[CORE_NCORE];
 
 static int first_call = 1;
+
 void* initial_esp;
 void* initial_ebp;
 
@@ -54,19 +56,29 @@ unsigned init_ctxsys(){
 
     unsigned i;
 
+    printf("Multicore context systeme was initialized.\n\n");
+
     for (i=0; i<CORE_NCORE; i++) {
-        ctxs_tab[i].ctxs_lenght = 0;
+        ctxs_tab[i] = malloc(sizeof(struct ctxs_by_core_s));
+        
+        if(ctxs_tab[i] == NULL){
+            fprintf(stderr, "ERROR init_ctxsys: échec d'allocution mémoire.\n");
+            return 0;
+        }
+
+        ctxs_tab[i]->ctxs_lenght = 0;
         ctx_current[i] = NULL;
     }
 
     return 1;
 }
 
-void switch_to_ctx(struct ctx_s *ctx){
+void switch_to_ctx(struct ctx_s *ctx, const unsigned core){
 
-    unsigned core = _in(CORE_ID);
-    if(ctx == NULL) {
-        printf("aucun contexte dans switch_to_ctx\n");
+    printf("[%d] switch_to_ctx\n", core);
+
+    if (ctx == NULL){
+        fprintf(stderr, "ERROR: Le context passé au switch_to_context est NULL.\n");
         return;
     }
 
@@ -74,7 +86,7 @@ void switch_to_ctx(struct ctx_s *ctx){
     /*if (ctx == ctx->next) {
         first_call = 1;
         ctx_current[core] = NULL;
-        ctxs_tab[core].ctxs_ring = NULL;
+        ctxs_tab[core]->ctxs_ring = NULL;
 
         asm("movl %0, %%esp"
             : 
@@ -85,11 +97,12 @@ void switch_to_ctx(struct ctx_s *ctx){
             :"r" (initial_ebp));
 
         return;
-    }*/
+        }*/
+
 
     if(ctx->ctx_state == CTX_END) {
-        if(ctxs_tab[core].ctxs_ring == ctx){
-            ctxs_tab[core].ctxs_ring = ctx_current[core];
+        if(ctxs_tab[core]->ctxs_ring == ctx){
+            ctxs_tab[core]->ctxs_ring = ctx_current[core];
         }
 
         ctx_current[core]->next = ctx->next;
@@ -98,13 +111,13 @@ void switch_to_ctx(struct ctx_s *ctx){
         yield();
     }
 
-    /*while(ctx->ctx_state == CTX_STP){
+    while(ctx->ctx_state == CTX_STP){
         ctx = ctx->next;
         if(ctx == ctx_current[core]){
             fprintf(stderr, "ERROR: coeur %d bloqués!\n", core);
             return;
         }
-    }*/
+    }
 
     if(first_call){
         first_call = 0;
@@ -117,8 +130,12 @@ void switch_to_ctx(struct ctx_s *ctx){
     }
 
     if(ctx_current[core]){
-        /* TODO voir si on peu changer */
-        assert(ctx->ctx_magic == CTX_MAGIC);
+
+        if(ctx->ctx_magic != CTX_MAGIC){
+	    fprintf(stderr, "ERROR: valeur magique incorrecte.\n");
+	    return;
+	}
+
         asm("movl %%esp, %0"
             : "=r" (ctx_current[core]->ctx_esp)
             : );
@@ -127,6 +144,7 @@ void switch_to_ctx(struct ctx_s *ctx){
             : );
     }
 
+    
     ctx_current[core] = ctx;
     asm("movl %0, %%esp"
         : 
@@ -135,6 +153,7 @@ void switch_to_ctx(struct ctx_s *ctx){
         :
         :"r" (ctx->ctx_ebp));
   
+
     start_ctx();
 }
 
@@ -142,16 +161,20 @@ void start_ctx() {
 
     unsigned core = _in(CORE_ID);
 
+    printf("[%d] start_ctx\n", core);
+
+    assert(ctx_current[core] != NULL);
+
     if(ctx_current[core]->ctx_state == CTX_INIT){
         ctx_current[core]->ctx_state = CTX_EXQ;
         ctx_current[core]->ctx_f(ctx_current[core]->ctx_arg);
         ctx_current[core]->ctx_state = CTX_END;
-    
+
         /* retour fonction d'origin du coeur */
         if(ctx_current[core] == ctx_current[core]->next) {
             first_call = 1;
             ctx_current[core] = NULL;
-            ctxs_tab[core].ctxs_ring = NULL;
+            ctxs_tab[core]->ctxs_ring = NULL;
             asm("movl %0, %%esp"
                 : 
                 :"r" (initial_esp));
@@ -164,7 +187,9 @@ void start_ctx() {
     }
 }
 
-int create_ctx(int stack_size, func_t f, void* arg, unsigned num_core) {
+int create_ctx(int stack_size, func_t f, void* arg, const unsigned core) {
+    
+    irq_disable();
     
     struct ctx_s * new_ctx;
     new_ctx = malloc(sizeof (struct ctx_s));
@@ -174,38 +199,41 @@ int create_ctx(int stack_size, func_t f, void* arg, unsigned num_core) {
         return 0;
     }
 
-    if (ctxs_tab[num_core].ctxs_lenght == 0) {
+    printf("[%d] create_ctx\n", core);
+
+    if (ctxs_tab[core]->ctxs_lenght == 0) {
         /* si ce coeur n'a pas de contexte */
-        ctxs_tab[num_core].ctxs_ring = new_ctx;
-        ctxs_tab->ctxs_lenght++;
+        ctxs_tab[core]->ctxs_ring = new_ctx;
         new_ctx->next = new_ctx;
+        ctxs_tab[core]->ctxs_lenght++;
     } else {
         /* sinon on insert un contexte */
-        new_ctx->next = ctxs_tab[num_core].ctxs_ring->next;
-        ctxs_tab->ctxs_lenght++;
-        ctxs_tab[num_core].ctxs_ring->next = new_ctx;
-        
+        new_ctx->next = ctxs_tab[core]->ctxs_ring->next;
+        ctxs_tab[core]->ctxs_ring->next = new_ctx;
     }
+
+    irq_enable();
 
     return init_ctx(new_ctx, stack_size, f, arg);
 }
 
 void yield() {
 
-    unsigned core = _in(CORE_ID);
-    /*int status;*/
-    _out(TIMER_ALARM, 0xFFFFFFFF-20);
-
     irq_disable();
-    /*while(status != 1) status = _in(CORE_LOCK);*/
 
+    unsigned core = _in(CORE_ID);
+
+    /*int status;*/
+    /*_out(TIMER_ALARM, 0xFFFFFFFF-20);*/
+
+    /*while(status != 1) status = _in(CORE_LOCK);*/
     if(ctx_current[core]){
-        printf(" coeur en cours -> %d\n", core);
-        switch_to_ctx(ctx_current[core]->next);
-    } else {
-        /* premier passage */
-        printf(" coeur en cours -> %d\n", core);
-        switch_to_ctx(ctxs_tab[core].ctxs_ring);
+	printf("[%d] yield: current is not NULL.\n", core);
+	switch_to_ctx(ctx_current[core]->next, core);
+    } else if(ctxs_tab[core]->ctxs_lenght != 0){
+	/* premier passage */
+	printf("[%d] yield: current is NULL.\n", core);
+	switch_to_ctx(ctxs_tab[core]->ctxs_ring, core);
     }
     irq_enable();
     /*_out(CORE_UNLOCK, 0);*/

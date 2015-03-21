@@ -19,7 +19,7 @@
     _mask(1);
     while(1);
     return;
-}*/
+    }*/
 
 static void empty_it(){
     return;
@@ -33,16 +33,20 @@ void irq_enable() {
     _mask(1);
 }
 
+
 void start(){
     int n_core = _in(CORE_ID);
     printf("Core : %d\n", n_core);
+
     _mask(1);
+
     /*if( ! create_ctx(STACK_SIZE, again, NULL, n_core)){
-        fprintf(stderr, "ERROR: ehec creation de contexte.\n");
+        fprintf(stderr, "ERROR: echec creation de contexte.\nt");
         exit(EXIT_FAILURE);
-    }*/
-    yield();
+	}*/
+
     while(1);
+    /*yield();*/
 }
 
 unsigned boot() {
@@ -55,12 +59,6 @@ unsigned boot() {
         return 0;
     }
 
-    /* initialise le systeme de contexte multi coeur */
-    if(!init_ctxsys()){
-        fprintf(stderr, "FATAL: echec initialisation système de contextes.\n");
-        return 0;
-    }
-
     irq_disable();
 
     /* Interreupt handlers */
@@ -69,7 +67,7 @@ unsigned boot() {
     }
 
     IRQVECTOR[0] = start;
-    IRQVECTOR[TIMER_IRQ] = yield;
+    IRQVECTOR[TIMER_IRQ] =  yield;
 
     for(i=1; i<CORE_NCORE; i++) {
         _out(CORE_IRQMAPPER + i, 0xffffffff);
@@ -79,11 +77,14 @@ unsigned boot() {
     _out(TIMER_ALARM, 0xffffffff - 20);
     _out(TIMER_PARAM, 1 << 6);/*128 + 64 + 32 + 16 + 8);*/
 
-    /* Allows all IT */
-    _mask(1);
 
     _out(CORE_STATUS, 0xF);
 
-    irq_enable();
+    /* initialise le systeme de contexte multi coeur */
+    if(!init_ctxsys()){
+        fprintf(stderr, "FATAL: echec initialisation système de contextes.\n");
+        return 0;
+    }
+
     return 1;
 }

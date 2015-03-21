@@ -1,11 +1,12 @@
 #include "context/sem.h"
 #include "hw/hw.h"
+#include "hw/hardware.h"
 #include <unistd.h>
 #define STACK_SIZE 16384
 #define N 10                       /* nombre de places dans le tampon */
 
 typedef unsigned objet_t;
-struct sem_s mutex, vide, plein;
+static struct sem_s mutex, vide, plein;
 int cpt;
 
 void producteur(void*);
@@ -15,8 +16,7 @@ static objet_t buf[1];
 
 int main(){
 
-    printf("debut main\n");
-    /* init materiels */
+     /* init materiels */
     if(!boot()){
         fprintf(stderr, "FATAL: L'initialisation du matériels a échoué.\n");
         exit(EXIT_FAILURE);
@@ -30,25 +30,26 @@ int main(){
     sem_init(&vide, N);
     /* nb de places occupees */
     sem_init(&plein, 0);
-
-    if( ! create_ctx(STACK_SIZE, producteur, NULL, 1)){
+    
+    if( ! create_ctx(STACK_SIZE, producteur, NULL, 2)){
         fprintf(stderr, "ERROR: echec creation de contexte.\nt");
         exit(EXIT_FAILURE);
     }
     
-    if( ! create_ctx(STACK_SIZE, consommateur, NULL, 2)){
+    if( ! create_ctx(STACK_SIZE, consommateur, NULL, 3)){
         fprintf(stderr, "ERROR: ehec creation de contexte.\n");
         exit(EXIT_FAILURE);
     }
 
+    irq_enable();
+
     while(1);
-    /*yield();*/
-    /*start_sched(yield);*/
 
-    printf("\nRetour au main\n");
-
-    exit(EXIT_SUCCESS);
+    fprintf(stderr, "ERROR: Retour au main.\n");
+    exit(EXIT_FAILURE);
 }
+
+
 
 void produire_objet(objet_t* objet) {
     *objet = 1;
