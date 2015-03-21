@@ -88,7 +88,7 @@ unsigned init_ctxsys();
  * \param[in] args L'argument de la fonction du contexte.
  * \return 0 en cas d'erreur, sinon 1.
  */
-int create_ctx(int stack_size, func_t f, void * args);
+int create_ctx(int stack_size, func_t f, void * args, unsigned num_core);
 
 /**
  * Permet au contexte courant de passer la main à un autre contexte. Ce 

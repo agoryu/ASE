@@ -31,12 +31,10 @@ static int first_call = 1;
 void* initial_esp;
 void* initial_ebp;
 
-int num_core;
-
 unsigned init_ctx(struct ctx_s *ctx, unsigned stack_size, func_t f, void* args){
 
     ctx->ctx_stack = malloc(stack_size);
-    num_core = 1;
+    
     if(!ctx->ctx_stack){
         fprintf(stderr, "ERROR: Erreur d'allocution pour la stack\n");
         return 0;
@@ -113,6 +111,7 @@ void switch_to_ctx(struct ctx_s *ctx){
             : "=r" (initial_ebp)
             : );
     }
+
     printf("sloupy %d\n", core);
 
     if(ctx_current[core]){
@@ -163,7 +162,7 @@ void start_ctx() {
     }
 }
 
-int create_ctx(int stack_size, func_t f, void* arg) {
+int create_ctx(int stack_size, func_t f, void* arg, unsigned num_core) {
     
     struct ctx_s * new_ctx;
     new_ctx = malloc(sizeof (struct ctx_s));
@@ -184,9 +183,6 @@ int create_ctx(int stack_size, func_t f, void* arg) {
         
     }
 
-    printf("num_core = %d\n", num_core);
-    num_core = (num_core + 1) % CORE_NCORE;
-
     return init_ctx(new_ctx, stack_size, f, arg);
 }
 
@@ -196,8 +192,9 @@ void yield() {
     /*int status;*/
     _out(TIMER_ALARM, 0xFFFFFFFF-20);
 
+    irq_disable();
     /*while(status != 1) status = _in(CORE_LOCK);*/
-    if(core <= num_core) {
+    /*if(core <= num_core) {*/
         if(ctx_current[core]){
             printf(" coeur en cours -> %d\n", core);
             switch_to_ctx(ctx_current[core]->next);
@@ -206,7 +203,8 @@ void yield() {
             printf(" coeur en cours -> %d\n", core);
             switch_to_ctx(ctxs_tab[core].ctxs_ring);
         }
-    }
+    /*}*/
+    irq_enable();
     /*_out(CORE_UNLOCK, 0);*/
 }
 
