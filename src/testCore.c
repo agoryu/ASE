@@ -33,19 +33,11 @@ static void print_number(){
 
     while(status != 1) status = _in(CORE_LOCK);
 
-    printf("coeur %d debut\n", num);
-    while(cpt++ != 10000000) {
-        /*printf("%d", cpt);*/
+    while(cpt++ < 100000) {
+        printf("[%d] -> %d\n", num, cpt);
     }
-    printf("coeur %d fin\n", num);
-    _out(CORE_UNLOCK, 0);
+    _out(CORE_UNLOCK, 1);
     return;
-}
-
-static void infinity() {
-    while(1) {
-        print_number();
-    }
 }
 
 int main() {
@@ -63,9 +55,9 @@ int main() {
     }
 
     IRQVECTOR[0] = again;
-    IRQVECTOR[TIMER_IRQ] = infinity;
+    IRQVECTOR[TIMER_IRQ] = print_number;
 
-    for(i=1; i<4; i++) {
+    for(i=1; i<6; i++) {
         _out(CORE_IRQMAPPER + i, 0xffffffff);
     }
     _out(CORE_IRQMAPPER, 0);
@@ -75,11 +67,8 @@ int main() {
 
     _mask(1);
         
-    _out(CORE_STATUS, 0xF);
+    _out(CORE_STATUS, 0x3F);
 
-    /*print_number();*/
-
-    /*while(i != 10000000) i++;*/
     while(1);
 
     return 0;

@@ -111,13 +111,13 @@ void switch_to_ctx(struct ctx_s *ctx, const unsigned core){
         yield();
     }
 
-    while(ctx->ctx_state == CTX_STP){
+    /*while(ctx->ctx_state == CTX_STP){
         ctx = ctx->next;
         if(ctx == ctx_current[core]){
             fprintf(stderr, "ERROR: coeur %d bloqués!\n", core);
             return;
         }
-    }
+    }*/
 
     if(first_call){
         first_call = 0;
@@ -228,11 +228,11 @@ void yield() {
 
     /*while(status != 1) status = _in(CORE_LOCK);*/
     if(ctx_current[core]){
-	printf("[%d] yield: current is not NULL.\n", core);
+	/*printf("[%d] yield: current is not NULL.\n", core);*/
 	switch_to_ctx(ctx_current[core]->next, core);
     } else if(ctxs_tab[core]->ctxs_lenght != 0){
 	/* premier passage */
-	printf("[%d] yield: current is NULL.\n", core);
+	/*printf("[%d] yield: current is NULL.\n", core);*/
 	switch_to_ctx(ctxs_tab[core]->ctxs_ring, core);
     }
     irq_enable();

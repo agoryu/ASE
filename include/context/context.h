@@ -96,11 +96,5 @@ int create_ctx(int stack_size, func_t f, void * args, unsigned num_core);
  */
 void yield();
 
-/**
- * Installe les gestionnaires d’interruptions et initialise le matériel.
- * \param[in] f Fonction associé à l'interruption.
- */
-/*void start_sched(irq_handler_func_t f);*/
-
 
 #endif

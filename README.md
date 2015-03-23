@@ -11,22 +11,15 @@ ASE++
 ## Lancement
 
     $ make
-	$ ./bin/mkvol -s 32767 -fc 0 -fs 1
-	$ ./bin/mknfs
-	$ ./bin/shell
+	$ bin/testCore
+
+## 1er étape : testCore
+
+Main du premier exercice. Le main compte jusque 100 000 sur chaque coeur.
+Il n'y a que un seul coeur qui compte à la fois grâce au lock.
 
 
-## Avancement
-
-La création du système de fichiers avec mknfs semble fonctonner correctement.
-Le shell fonctionne et lance les commandes avec des arguments.
-Les commandes ne fonctionnent pas toutes correctement, la commande mkdir
-pause problème, on ne retrouve plus le mbr après son utilisation.
-
-
-## Commandes implémentées
-
- - ls
- - cat [filename]
- - cd [dirname]
- - mkdir [dirname]
+## 2e étape : prodcons amélioré
+- définition de liste de contexte -> ok
+- création des contextes sur le core 0 -> ok
+- démarage d'une boucle infini à la fin du main de prodcons et dans la fonction start de hw
