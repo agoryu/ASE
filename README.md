@@ -12,6 +12,7 @@ ASE++
 
     $ make
 	$ bin/testCore
+    $ bin/prodcons
 
 ## 1er étape : testCore
 
